@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: parking-webapp
+  datasource:
+    url: jdbc:sqlite:parking_webapp.db
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1
+      connection-timeout: 30000
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+vaadin:
+  launch-browser: true
+
+mqtt:
+  broker: tcp://localhost:1883
+  client-id: SpringBootBackend_Parking
+  topics: sensores/temperatura,sensores/presencia,parking/barrera
+  qos: 1

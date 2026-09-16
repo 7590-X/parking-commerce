@@ -1,0 +1,22 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq-broker
+    ports:
+      # AMQP: Puerto nativo usado por Spring Boot
+      - "5672:5672"
+      # MQTT: Puerto que usará el Arduino UNO
+      - "1883:1883"
+      # Management UI: Interfaz web de administración
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      # Volumen para persistir los mensajes, colas y configuraciones (como el plugin MQTT)
+      - rabbitmq_data:/var/lib/rabbitmq
+    command: sh -c "rabbitmq-plugins enable --offline rabbitmq_mqtt && rabbitmq-server"
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
