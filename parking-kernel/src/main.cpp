@@ -1,26 +1,56 @@
 #include <Arduino.h>
-#include <BrokerLib.h>
+#include <Config.h>
 #include <WifiLib.h>
+#include <BrokerLib.h>
+#include <ParkingKernel.h>
+
+ParkingKernel kernel;
 
 void onMQTTMessage(char *topic, byte *payload, unsigned int length)
 {
-  Serial.print("Mensaje recibido en el topic: ");
-  Serial.println(topic);
-  Serial.print("Payload: ");
-  for (unsigned int i = 0; i < length; i++)
-  {
-    Serial.print((char)payload[i]);
-  }
+    char messageBuffer[16];
+    unsigned int copyLen = (length < sizeof(messageBuffer) - 1) ? length : sizeof(messageBuffer) - 1;
+    memcpy(messageBuffer, payload, copyLen);
+    messageBuffer[copyLen] = '\0';
+
+    Serial.print(F("[MQTT Rx] Topic: "));
+    Serial.print(topic);
+    Serial.print(F(" | Payload: "));
+    Serial.println(messageBuffer);
+
+    if (strcmp(topic, TOPIC_ENTRY_RESPONSE) == 0)
+    {
+        kernel.handleAuthResponse(messageBuffer);
+    }
+    else if (strcmp(topic, TOPIC_BARRIER_CMD) == 0)
+    {
+        kernel.handleCommand(messageBuffer);
+    }
 }
 
 void setup()
 {
-  Serial.begin(9600);
-  connectWiFi("Cisco72164", "20AA4B48F5E6");
-  setupMQTTClient("192.168.1.100", onMQTTMessage);
+    Serial.begin(9600);
+    while (!Serial && millis() < 2000) { ; } // Espera opcional en puertos nativos
+
+    Serial.println(F("\n======================================"));
+    Serial.println(F("   PARKING KERNEL - ARDUINO UNO       "));
+    Serial.println(F("======================================"));
+
+    // 1. Inicializar lógica y actuadores primero (seguridad de hardware)
+    kernel.begin();
+
+    // 2. Inicializar conectividad
+    setupWiFi(WIFI_SSID, WIFI_PASS);
+    setupMQTTClient(MQTT_BROKER_IP, onMQTTMessage);
 }
 
 void loop()
 {
-  sendMQTTMessage("kernel/arduino/talanquera","VLD");
+    uint32_t now = millis();
+
+    // Tareas cooperativas no bloqueantes
+    updateWiFi(now);
+    updateMQTT(now);
+    kernel.update(now);
 }
