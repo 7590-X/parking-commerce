@@ -8,6 +8,7 @@ namespace
     const char *storedPassword = nullptr;
     uint32_t lastWiFiCheck = 0;
     const uint32_t WIFI_CHECK_INTERVAL_MS = 10000UL;
+    bool wifiConnected = false;
 }
 
 void setupWiFi(const char *ssid, const char *password)
@@ -16,13 +17,13 @@ void setupWiFi(const char *ssid, const char *password)
     storedPassword = password;
 
     espSerial.begin(9600);
-    espSerial.println("AT+RST");
-    espSerial.println("AT+CWMODE=1");
+    // WiFi.init ya gestiona internamente la inicialización y reseteo del ESP de forma segura
     WiFi.init(&espSerial);
 
     if (WiFi.status() == WL_NO_SHIELD)
     {
         Serial.println(F("[WiFi] ERROR: Modulo ESP-01 no responde."));
+        wifiConnected = false;
         return;
     }
 
@@ -40,7 +41,9 @@ void setupWiFi(const char *ssid, const char *password)
         Serial.print(F("."));
     }
 
-    if (WiFi.status() == WL_CONNECTED)
+    wifiConnected = (WiFi.status() == WL_CONNECTED);
+
+    if (wifiConnected)
     {
         Serial.println(F("\n[WiFi] Conectado exitosamente!"));
         Serial.print(F("[WiFi] IP: "));
@@ -54,21 +57,24 @@ void setupWiFi(const char *ssid, const char *password)
 
 bool isWiFiConnected()
 {
-    return WiFi.status() == WL_CONNECTED;
+    return wifiConnected;
 }
 
 void updateWiFi(uint32_t now)
 {
-    // Verificación periódica sin bloquear
+    // Verificación periódica no saturante (cada 10 segundos)
     if (now - lastWiFiCheck < WIFI_CHECK_INTERVAL_MS)
     {
         return;
     }
     lastWiFiCheck = now;
 
-    if (WiFi.status() != WL_CONNECTED && storedSsid != nullptr)
+    wifiConnected = (WiFi.status() == WL_CONNECTED);
+
+    if (!wifiConnected && storedSsid != nullptr)
     {
         Serial.println(F("[WiFi] Reconectando en segundo plano..."));
         WiFi.begin(storedSsid, storedPassword);
+        wifiConnected = (WiFi.status() == WL_CONNECTED);
     }
 }

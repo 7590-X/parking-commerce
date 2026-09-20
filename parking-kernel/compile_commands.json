@@ -1,0 +1,308 @@
+[
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/CDC.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/CDC.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/CDC.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/CDC.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/HardwareSerial.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/HardwareSerial.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/HardwareSerial0.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial0.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial0.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/HardwareSerial0.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/HardwareSerial1.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial1.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial1.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/HardwareSerial1.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/HardwareSerial2.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial2.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial2.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/HardwareSerial2.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/HardwareSerial3.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial3.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/HardwareSerial3.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/HardwareSerial3.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/IPAddress.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/IPAddress.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/IPAddress.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/IPAddress.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/PluggableUSB.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/PluggableUSB.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/PluggableUSB.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/PluggableUSB.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/Print.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/Print.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/Print.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/Print.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/Stream.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/Stream.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/Stream.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/Stream.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/Tone.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/Tone.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/Tone.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/Tone.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/USBCore.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/USBCore.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/USBCore.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/USBCore.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/WInterrupts.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/WInterrupts.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/WInterrupts.c",
+        "output": ".pio/build/uno/FrameworkArduino/WInterrupts.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/WMath.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/WMath.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/WMath.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/WMath.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/WString.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/WString.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/WString.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/WString.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/abi.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/abi.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/abi.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/abi.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/hooks.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/hooks.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/hooks.c",
+        "output": ".pio/build/uno/FrameworkArduino/hooks.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/main.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/main.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/main.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/main.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/FrameworkArduino/new.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/new.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/new.cpp",
+        "output": ".pio/build/uno/FrameworkArduino/new.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/wiring.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring.c",
+        "output": ".pio/build/uno/FrameworkArduino/wiring.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/wiring_analog.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_analog.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_analog.c",
+        "output": ".pio/build/uno/FrameworkArduino/wiring_analog.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/wiring_digital.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_digital.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_digital.c",
+        "output": ".pio/build/uno/FrameworkArduino/wiring_digital.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -mmcu=atmega328p -x assembler-with-cpp -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard -c -o .pio/build/uno/FrameworkArduino/wiring_pulse.S.o /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_pulse.S",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_pulse.S",
+        "output": ".pio/build/uno/FrameworkArduino/wiring_pulse.S.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/wiring_pulse.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_pulse.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_pulse.c",
+        "output": ".pio/build/uno/FrameworkArduino/wiring_pulse.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/uno/FrameworkArduino/wiring_shift.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_shift.c",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino/wiring_shift.c",
+        "output": ".pio/build/uno/FrameworkArduino/wiring_shift.c.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib8bb/PubSubClient/PubSubClient.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/PubSubClient/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/PubSubClient/src/PubSubClient.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/PubSubClient/src/PubSubClient.cpp",
+        "output": ".pio/build/uno/lib8bb/PubSubClient/PubSubClient.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/avr/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/avr/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/avr/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/avr/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/esp32/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/esp32/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/esp32/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/esp32/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/mbed/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/mbed/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/mbed/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/mbed/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/megaavr/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/megaavr/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/megaavr/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/megaavr/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/nrf52/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/nrf52/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/nrf52/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/nrf52/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/renesas/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/renesas/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/renesas/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/renesas/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/sam/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/sam/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/sam/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/sam/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/samd/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/samd/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/samd/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/samd/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/stm32f4/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/stm32f4/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/stm32f4/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/stm32f4/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/xmc/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/xmc/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/xmc/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/xmc/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib99c/Servo/zephyr/Servo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard .pio/libdeps/uno/Servo/src/zephyr/Servo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": ".pio/libdeps/uno/Servo/src/zephyr/Servo.cpp",
+        "output": ".pio/build/uno/lib99c/Servo/zephyr/Servo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib549/WiFiEsp/WiFiEsp.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WiFiEsp/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WiFiEsp/src/WiFiEsp.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WiFiEsp/src/WiFiEsp.cpp",
+        "output": ".pio/build/uno/lib549/WiFiEsp/WiFiEsp.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib549/WiFiEsp/WiFiEspClient.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WiFiEsp/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WiFiEsp/src/WiFiEspClient.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WiFiEsp/src/WiFiEspClient.cpp",
+        "output": ".pio/build/uno/lib549/WiFiEsp/WiFiEspClient.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib549/WiFiEsp/WiFiEspServer.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WiFiEsp/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WiFiEsp/src/WiFiEspServer.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WiFiEsp/src/WiFiEspServer.cpp",
+        "output": ".pio/build/uno/lib549/WiFiEsp/WiFiEspServer.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib549/WiFiEsp/WiFiEspUdp.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WiFiEsp/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WiFiEsp/src/WiFiEspUdp.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WiFiEsp/src/WiFiEspUdp.cpp",
+        "output": ".pio/build/uno/lib549/WiFiEsp/WiFiEspUdp.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib549/WiFiEsp/utility/EspDrv.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WiFiEsp/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WiFiEsp/src/utility/EspDrv.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WiFiEsp/src/utility/EspDrv.cpp",
+        "output": ".pio/build/uno/lib549/WiFiEsp/utility/EspDrv.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib549/WiFiEsp/utility/RingBuffer.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WiFiEsp/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WiFiEsp/src/utility/RingBuffer.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WiFiEsp/src/utility/RingBuffer.cpp",
+        "output": ".pio/build/uno/lib549/WiFiEsp/utility/RingBuffer.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/libb17/SoftwareSerial/SoftwareSerial.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -I/home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard /home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src/SoftwareSerial.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "/home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src/SoftwareSerial.cpp",
+        "output": ".pio/build/uno/libb17/SoftwareSerial/SoftwareSerial.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib750/WifiLib/WifiLib.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/WifiLib -Ilib/WiFiEsp/src -I/home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/WifiLib/WifiLib.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/WifiLib/WifiLib.cpp",
+        "output": ".pio/build/uno/lib750/WifiLib/WifiLib.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib5c7/BrokerLib/BrokerLib.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/BrokerLib -Ilib/WifiLib -I/home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -Ilib/WiFiEsp/src -I.pio/libdeps/uno/PubSubClient/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/BrokerLib/BrokerLib.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/BrokerLib/BrokerLib.cpp",
+        "output": ".pio/build/uno/lib5c7/BrokerLib/BrokerLib.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib7bb/Barrier/BarrierServo.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/Barrier -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/Barrier/BarrierServo.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/Barrier/BarrierServo.cpp",
+        "output": ".pio/build/uno/lib7bb/Barrier/BarrierServo.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib107/Indicators/LedIndicator.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/Indicators -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/Indicators/LedIndicator.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/Indicators/LedIndicator.cpp",
+        "output": ".pio/build/uno/lib107/Indicators/LedIndicator.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib38b/Ultrasonic/UltrasonicSensor.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/Ultrasonic -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/Ultrasonic/UltrasonicSensor.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/Ultrasonic/UltrasonicSensor.cpp",
+        "output": ".pio/build/uno/lib38b/Ultrasonic/UltrasonicSensor.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/lib2dc/ParkingKernel/ParkingKernel.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Ilib/ParkingKernel -Ilib/Ultrasonic -Ilib/Indicators -Ilib/BrokerLib -Ilib/WifiLib -I/home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -Ilib/WiFiEsp/src -I.pio/libdeps/uno/PubSubClient/src -Ilib/Barrier -I.pio/libdeps/uno/Servo/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard lib/ParkingKernel/ParkingKernel.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "lib/ParkingKernel/ParkingKernel.cpp",
+        "output": ".pio/build/uno/lib2dc/ParkingKernel/ParkingKernel.cpp.o"
+    },
+    {
+        "command": "/home/rmachicm/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/uno/src/main.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega328p -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60200 -DARDUINO_AVR_UNO -D_SS_MAX_RX_BUFF=128 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Isrc -Ilib/ParkingKernel -Ilib/Ultrasonic -Ilib/Indicators -Ilib/Barrier -Ilib/BrokerLib -Ilib/WifiLib -I/home/rmachicm/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -Ilib/WiFiEsp/src -I.pio/libdeps/uno/Servo/src -I.pio/libdeps/uno/PubSubClient/src -Iinclude -I/home/rmachicm/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/rmachicm/.platformio/packages/framework-arduino-avr/variants/standard src/main.cpp",
+        "directory": "/home/rmachicm/Projects/Proyectos-Universidad/electronica-digital-proyecto/parking-kernel",
+        "file": "src/main.cpp",
+        "output": ".pio/build/uno/src/main.cpp.o"
+    }
+]

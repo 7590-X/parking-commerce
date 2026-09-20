@@ -1,4 +1,5 @@
 #include <BrokerLib.h>
+#include <WifiLib.h>
 
 namespace
 {
@@ -19,8 +20,8 @@ void setupMQTTClient(const char *broker, MQTTMessageHandler handler, const char 
 
 void updateMQTT(uint32_t now)
 {
-    // Si no hay WiFi, no intentar conectar MQTT
-    if (WiFi.status() != WL_CONNECTED)
+    // Si no hay WiFi (consulta en memoria, sin saturar comandos AT serie), no intentar conectar MQTT
+    if (!isWiFiConnected())
     {
         return;
     }
@@ -50,9 +51,13 @@ void updateMQTT(uint32_t now)
         if (ok)
         {
             Serial.println(F("Conectado!"));
-            // Suscribirse automáticamente a los comandos de la barrera
+            // Suscribirse espaciando llamadas para permitir que el ESP procese cada SUBACK ordenadamente
             client.subscribe(TOPIC_BARRIER_CMD);
+            client.loop();
+            delay(50);
             client.subscribe(TOPIC_ENTRY_RESPONSE);
+            client.loop();
+
             Serial.print(F("[MQTT] Suscrito a: "));
             Serial.print(TOPIC_BARRIER_CMD);
             Serial.print(F(" y "));
