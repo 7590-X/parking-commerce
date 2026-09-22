@@ -1,14 +1,16 @@
 package com.parking.webapp.model;
 
 import java.time.Instant;
-import com.vaadin.copilot.shaded.classgraph.nonapi.json.Id;
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +32,7 @@ public class TicketModel {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "uuid")
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "uuid", unique = true)
     private String uuid;
 
     @Column(name = "entry_type")
@@ -52,4 +53,14 @@ public class TicketModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parking_id")
     private ParkingModel parking;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.uuid == null || this.uuid.isBlank()) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+        if (this.entryTime == null) {
+            this.entryTime = Instant.now();
+        }
+    }
 }
