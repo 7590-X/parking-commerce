@@ -10,9 +10,7 @@ import com.parking.webapp.service.ParkingWebService;
 import com.parking.webapp.views.components.QrScannerComponent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
@@ -25,7 +23,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Salida de Parqueo | SmartParking")
+@PageTitle("Control de Salida | SAP Business One")
 @Route(value = "salida", layout = MainLayout.class)
 public class ExitView extends VerticalLayout {
 
@@ -44,60 +42,130 @@ public class ExitView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
         setSpacing(true);
-        setMaxWidth("1200px");
+        setMaxWidth("1250px");
         getStyle().set("margin", "0 auto");
+        getStyle().set("padding-top", "1.5rem");
 
         createHeaderSection();
-        createKioskScannerSection();
-        createManualFallbackSection();
+        createMainLayout();
     }
 
     private void createHeaderSection() {
-        H1 title = new H1("Terminal de Salida y Apertura de Barrera");
-        title.getStyle().set("margin-bottom", "0.25rem");
-        title.getStyle().set("font-size", "2.2rem");
+        Div headerPanel = new Div();
+        headerPanel.addClassName("sap-panel");
+        headerPanel.setWidthFull();
 
-        Paragraph subtitle = new Paragraph("Presente el código QR de su ticket pagado frente a la cámara para abrir la talanquera.");
-        subtitle.getStyle().set("color", "var(--text-muted)");
-        subtitle.getStyle().set("margin-top", "0");
+        H2 title = new H2("Control de Salida y Apertura de Barrera");
+        title.getStyle().set("color", "#102a43");
+        title.getStyle().set("font-size", "1.45rem");
+        title.getStyle().set("font-weight", "600");
+        title.getStyle().set("margin", "0 0 0.25rem 0");
 
-        add(new VerticalLayout(title, subtitle));
+        Paragraph subtitle = new Paragraph("Aproxime el código QR de su ticket pagado frente al lector óptico para autorizar la apertura de la talanquera.");
+        subtitle.getStyle().set("color", "var(--sap-text-muted)");
+        subtitle.getStyle().set("margin", "0");
+        subtitle.getStyle().set("font-size", "0.9rem");
+
+        headerPanel.add(new VerticalLayout(title, subtitle));
+        add(headerPanel);
     }
 
-    private void createKioskScannerSection() {
+    private void createMainLayout() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
         layout.setSpacing(true);
 
-        // Columna Izquierda: Escáner de cámara continuo
+        // Columna Izquierda: Escáner óptico
         VerticalLayout leftSide = new VerticalLayout();
         leftSide.setWidth("50%");
         leftSide.setSpacing(true);
         leftSide.setPadding(false);
 
-        Div scannerWrapper = new Div();
-        scannerWrapper.addClassName("qr-scanner-wrapper");
-        scannerWrapper.setWidthFull();
+        Div scannerPanel = new Div();
+        scannerPanel.addClassName("sap-panel");
+        scannerPanel.setWidthFull();
 
-        H2 scannerTitle = new H2("Cámara de Salida Vehicular");
-        scannerTitle.getStyle().set("font-size", "1.2rem");
-        scannerTitle.getStyle().set("margin-top", "0");
+        Div scannerHeader = new Div();
+        scannerHeader.addClassName("sap-panel-header");
 
-        qrScanner.setOnScanListener(this::handleExitScan);
-        qrScanner.setOnErrorListener(err -> System.err.println("Exit Scanner info: " + err));
+        H3 scannerTitle = new H3("Lector Óptico de Salida (Cámara)");
+        scannerTitle.addClassName("sap-panel-title");
 
-        scannerWrapper.add(scannerTitle, qrScanner);
-
-        Button restartBtn = new Button("Reiniciar Cámara", VaadinIcon.CAMERA.create(), e -> {
+        Button restartBtn = new Button("Reconectar Lector", VaadinIcon.CAMERA.create(), e -> {
             isProcessing = false;
             qrScanner.startScanning();
             showIdleStatus();
         });
-        restartBtn.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        restartBtn.addClassName("sap-btn-secondary");
 
-        leftSide.add(scannerWrapper, restartBtn);
+        scannerHeader.add(scannerTitle, restartBtn);
 
-        // Columna Derecha: Estado de la barrera / Autorización
+        qrScanner.setOnScanListener(this::handleExitScan);
+        qrScanner.setOnErrorListener(err -> System.err.println("Exit Scanner notice: " + err));
+
+        scannerPanel.add(scannerHeader, qrScanner);
+
+        // Panel de Entrada Manual
+        Div manualPanel = new Div();
+        manualPanel.addClassName("sap-panel");
+        manualPanel.setWidthFull();
+
+        Div manualHeader = new Div();
+        manualHeader.addClassName("sap-panel-header");
+        H3 manualTitle = new H3("Validación Manual / Terminal Auxiliar");
+        manualTitle.addClassName("sap-panel-title");
+        manualHeader.add(manualTitle);
+
+        manualExitCodeField.setPlaceholder("Ingrese código UUID de ticket...");
+        manualExitCodeField.setWidthFull();
+        manualExitCodeField.setClearButtonVisible(true);
+
+        Button validateBtn = new Button("Validar Salida", VaadinIcon.CHECK.create(), e -> {
+            String code = manualExitCodeField.getValue();
+            if (code != null && !code.isBlank()) {
+                isProcessing = false;
+                handleExitScan(code.trim());
+            }
+        });
+        validateBtn.addClassName("sap-btn-primary");
+
+        HorizontalLayout manualLayout = new HorizontalLayout(manualExitCodeField, validateBtn);
+        manualLayout.setWidthFull();
+        manualLayout.setFlexGrow(1, manualExitCodeField);
+        manualLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+
+        // Botones de prueba rápida
+        HorizontalLayout quickButtons = new HorizontalLayout();
+        quickButtons.setSpacing(true);
+        quickButtons.setAlignItems(FlexComponent.Alignment.CENTER);
+        quickButtons.getStyle().set("margin-top", "0.75rem");
+
+        Span quickLabel = new Span("Pruebas Rápidas:");
+        quickLabel.getStyle().set("font-size", "0.85rem");
+        quickLabel.getStyle().set("color", "var(--sap-text-muted)");
+        quickLabel.getStyle().set("font-weight", "600");
+
+        Button testPaid = new Button("DEMO-PAID-002 (Pagado)", e -> {
+            manualExitCodeField.setValue("DEMO-PAID-002");
+            isProcessing = false;
+            handleExitScan("DEMO-PAID-002");
+        });
+        testPaid.addClassName("sap-btn-secondary");
+
+        Button testPending = new Button("DEMO-PENDING-001 (No Pagado)", e -> {
+            manualExitCodeField.setValue("DEMO-PENDING-001");
+            isProcessing = false;
+            handleExitScan("DEMO-PENDING-001");
+        });
+        testPending.addClassName("sap-btn-secondary");
+
+        quickButtons.add(quickLabel, testPaid, testPending);
+
+        manualPanel.add(manualHeader, manualLayout, quickButtons);
+
+        leftSide.add(scannerPanel, manualPanel);
+
+        // Columna Derecha: Estado de la Barrera
         VerticalLayout rightSide = new VerticalLayout();
         rightSide.setWidth("50%");
         rightSide.setSpacing(true);
@@ -116,22 +184,23 @@ public class ExitView extends VerticalLayout {
         statusContainer.removeAll();
 
         Div idleBox = new Div();
-        idleBox.addClassName("ticket-receipt-card");
+        idleBox.addClassName("sap-panel");
         idleBox.getStyle().set("text-align", "center");
-        idleBox.getStyle().set("padding", "3.5rem 1.5rem");
+        idleBox.getStyle().set("padding", "3.5rem 2rem");
 
         Span icon = new Span("🚧");
         icon.getStyle().set("font-size", "3.5rem");
 
-        H2 title = new H2("Barrera en Espera");
+        H3 title = new H3("Talanquera en Espera");
         title.getStyle().set("margin-top", "1rem");
-        title.getStyle().set("color", "var(--text-muted)");
+        title.getStyle().set("color", "var(--sap-text)");
 
-        Paragraph p = new Paragraph("Enfoque su ticket frente a la cámara. El sistema verificará el pago y abrirá la talanquera automáticamente.");
-        p.getStyle().set("color", "var(--text-subtle)");
+        Paragraph p = new Paragraph("Enfoque su ticket frente a la cámara. El sistema verificará la liquidación del pago y accionará la barrera de salida automáticamente.");
+        p.getStyle().set("color", "var(--sap-text-secondary)");
+        p.getStyle().set("font-size", "0.9rem");
 
         Span barrierState = new Span("ESTADO DE BARRERA: CERRADA");
-        barrierState.addClassName("status-pill");
+        barrierState.addClassName("sap-badge");
         barrierState.addClassName("warning");
         barrierState.getStyle().set("margin-top", "1rem");
 
@@ -160,28 +229,31 @@ public class ExitView extends VerticalLayout {
         statusContainer.removeAll();
 
         Div banner = new Div();
-        banner.addClassName("exit-banner-success");
+        banner.addClassName("sap-alert-banner");
+        banner.addClassName("success");
 
         Span icon = new Span("✅");
-        icon.getStyle().set("font-size", "4rem");
+        icon.getStyle().set("font-size", "3.5rem");
 
-        H1 title = new H1("¡SALIDA AUTORIZADA!");
-        title.getStyle().set("color", "#34d399");
+        H2 title = new H2("SALIDA AUTORIZADA");
+        title.getStyle().set("color", "var(--sap-success)");
         title.getStyle().set("margin", "0.5rem 0");
+        title.getStyle().set("font-weight", "700");
 
-        H3 barrierMsg = new H3("🚧 Talanquera Abierta - Buen Viaje");
-        barrierMsg.getStyle().set("color", "#f8fafc");
-        barrierMsg.getStyle().set("margin", "0.25rem 0 1.5rem 0");
+        H3 barrierMsg = new H3("Talanquera Abierta - Buen Viaje");
+        barrierMsg.getStyle().set("color", "var(--sap-text)");
+        barrierMsg.getStyle().set("margin", "0.25rem 0 1rem 0");
 
         Paragraph details = new Paragraph(
                 "Ticket: " + ticket.getUuid() + " | Salida registrada: " + formatter.format(Instant.now())
         );
-        details.getStyle().set("color", "var(--text-muted)");
+        details.getStyle().set("color", "var(--sap-text-muted)");
         details.getStyle().set("font-size", "0.9rem");
 
-        Span timerMsg = new Span("La barrera se cerrará y la terminal se reanudará en unos momentos...");
-        timerMsg.getStyle().set("color", "#a7f3d0");
+        Span timerMsg = new Span("Reanudando escáner en 5 segundos...");
+        timerMsg.getStyle().set("color", "var(--sap-success)");
         timerMsg.getStyle().set("font-size", "0.85rem");
+        timerMsg.getStyle().set("font-weight", "600");
 
         banner.add(icon, title, barrierMsg, details, timerMsg);
         statusContainer.add(banner);
@@ -207,86 +279,38 @@ public class ExitView extends VerticalLayout {
         statusContainer.removeAll();
 
         Div banner = new Div();
-        banner.addClassName("exit-banner-danger");
+        banner.addClassName("sap-alert-banner");
+        banner.addClassName("danger");
 
         Span icon = new Span("🚫");
-        icon.getStyle().set("font-size", "4rem");
+        icon.getStyle().set("font-size", "3.5rem");
 
-        H1 title = new H1("SALIDA DENEGADA");
-        title.getStyle().set("color", "#f87171");
+        H2 title = new H2("SALIDA DENEGADA");
+        title.getStyle().set("color", "var(--sap-danger)");
         title.getStyle().set("margin", "0.5rem 0");
+        title.getStyle().set("font-weight", "700");
 
         H3 reasonMsg = new H3(reason);
-        reasonMsg.getStyle().set("color", "#ffffff");
-        reasonMsg.getStyle().set("margin", "0.5rem 0 1.5rem 0");
+        reasonMsg.getStyle().set("color", "var(--sap-text)");
+        reasonMsg.getStyle().set("margin", "0.25rem 0 1.5rem 0");
 
-        Button payRedirectBtn = new Button("Ir al Módulo de Pago", VaadinIcon.CREDIT_CARD.create(), e -> {
+        Button payRedirectBtn = new Button("Ir al Módulo de Cobro", VaadinIcon.CREDIT_CARD.create(), e -> {
             getUI().ifPresent(ui -> ui.navigate(PaymentView.class));
         });
-        payRedirectBtn.addClassName("btn-success-glow");
+        payRedirectBtn.addClassName("sap-btn-primary");
 
         Button retryBtn = new Button("Intentar de Nuevo", VaadinIcon.REFRESH.create(), e -> {
             isProcessing = false;
             showIdleStatus();
             qrScanner.startScanning();
         });
-        retryBtn.getStyle().set("margin-left", "1rem");
+        retryBtn.addClassName("sap-btn-secondary");
 
         HorizontalLayout actionRow = new HorizontalLayout(payRedirectBtn, retryBtn);
         actionRow.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        actionRow.setSpacing(true);
 
         banner.add(icon, title, reasonMsg, actionRow);
         statusContainer.add(banner);
-    }
-
-    private void createManualFallbackSection() {
-        Div manualSection = new Div();
-        manualSection.addClassName("metric-card");
-        manualSection.setWidthFull();
-
-        Span manualTitle = new Span("Validación Manual o Pruebas:");
-        manualTitle.getStyle().set("font-weight", "600");
-        manualTitle.getStyle().set("font-size", "0.9rem");
-        manualTitle.getStyle().set("color", "var(--text-muted)");
-
-        manualExitCodeField.setPlaceholder("Ingrese código UUID de ticket...");
-        manualExitCodeField.setWidthFull();
-        manualExitCodeField.setClearButtonVisible(true);
-
-        Button validateBtn = new Button("Validar Salida", VaadinIcon.CHECK.create(), e -> {
-            String code = manualExitCodeField.getValue();
-            if (code != null && !code.isBlank()) {
-                isProcessing = false;
-                handleExitScan(code.trim());
-            }
-        });
-        validateBtn.addClassName("btn-primary-glow");
-
-        HorizontalLayout manualLayout = new HorizontalLayout(manualExitCodeField, validateBtn);
-        manualLayout.setWidthFull();
-        manualLayout.setFlexGrow(1, manualExitCodeField);
-
-        HorizontalLayout quickButtons = new HorizontalLayout();
-        quickButtons.setSpacing(true);
-        quickButtons.getStyle().set("margin-top", "0.5rem");
-
-        Button testPaid = new Button("Probar DEMO-PAID-002 (Pagado)", e -> {
-            manualExitCodeField.setValue("DEMO-PAID-002");
-            isProcessing = false;
-            handleExitScan("DEMO-PAID-002");
-        });
-        testPaid.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
-
-        Button testPending = new Button("Probar DEMO-PENDING-001 (No Pagado)", e -> {
-            manualExitCodeField.setValue("DEMO-PENDING-001");
-            isProcessing = false;
-            handleExitScan("DEMO-PENDING-001");
-        });
-        testPending.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
-
-        quickButtons.add(new Span("Pruebas Rápidas:"), testPaid, testPending);
-
-        manualSection.add(manualTitle, manualLayout, quickButtons);
-        add(manualSection);
     }
 }

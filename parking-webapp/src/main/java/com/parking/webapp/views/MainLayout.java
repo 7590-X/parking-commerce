@@ -1,7 +1,6 @@
 package com.parking.webapp.views;
 
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -15,42 +14,44 @@ public class MainLayout extends AppLayout {
     }
 
     private void createHeader() {
-        // Logotipo / Marca
-        Span logoIcon = new Span("🅿️");
-        logoIcon.getStyle().set("font-size", "1.5rem");
+        // Marca estilo SAP Business One
+        Span sapBadge = new Span("PARQUEO");
+        sapBadge.addClassName("sap-logo-badge");
 
-        H2 brandTitle = new H2("SmartParking");
-        brandTitle.getStyle().set("margin", "0");
-        brandTitle.getStyle().set("font-size", "1.25rem");
-        brandTitle.getStyle().set("font-weight", "800");
-        brandTitle.getStyle().set("color", "#ffffff");
+        H2 brandTitle = new H2("Gestión de Parqueo Empresarial");
+        brandTitle.addClassName("sap-app-title");
 
-        Span iotBadge = new Span("IoT Cloud");
-        iotBadge.addClassName("brand-badge");
-        iotBadge.getStyle().set("font-size", "0.75rem");
-        iotBadge.getStyle().set("padding", "0.2rem 0.6rem");
-
-        HorizontalLayout brand = new HorizontalLayout(logoIcon, brandTitle, iotBadge);
+        HorizontalLayout brand = new HorizontalLayout(sapBadge, brandTitle);
+        brand.addClassName("sap-brand-container");
         brand.setAlignItems(FlexComponent.Alignment.CENTER);
-        brand.setSpacing(true);
 
-        // Enlaces de navegación
+        // Enlaces de navegación con diseño cuadrado y pestañas de menú
         RouterLink availabilityLink = new RouterLink("📊 Disponibilidad", AvailabilityView.class);
-        availabilityLink.addClassName("nav-tab-link");
+        availabilityLink.addClassName("sap-nav-tab");
 
-        RouterLink paymentLink = new RouterLink("💳 Cobro / Pago", PaymentView.class);
-        paymentLink.addClassName("nav-tab-link");
+        RouterLink paymentLink = new RouterLink("💳 Cobro de Ticket", PaymentView.class);
+        paymentLink.addClassName("sap-nav-tab");
 
-        RouterLink exitLink = new RouterLink("🚗 Terminal Salida", ExitView.class);
-        exitLink.addClassName("nav-tab-link");
+        RouterLink exitLink = new RouterLink("🚗 Control de Salida", ExitView.class);
+        exitLink.addClassName("sap-nav-tab");
 
         HorizontalLayout navTabs = new HorizontalLayout(availabilityLink, paymentLink, exitLink);
+        navTabs.addClassName("sap-nav-tabs");
         navTabs.setAlignItems(FlexComponent.Alignment.CENTER);
-        navTabs.setSpacing(true);
+        navTabs.setSpacing(false);
 
-        // Barra superior
-        HorizontalLayout header = new HorizontalLayout(brand, navTabs);
-        header.addClassName("app-navbar");
+        // Indicador de conexión / sistema
+        Span systemStatus = new Span("● En Línea");
+        systemStatus.getStyle().set("color", "#74d99f");
+        systemStatus.getStyle().set("font-size", "0.8rem");
+        systemStatus.getStyle().set("font-weight", "600");
+
+        HorizontalLayout rightSide = new HorizontalLayout(systemStatus);
+        rightSide.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        // Barra superior completa
+        HorizontalLayout header = new HorizontalLayout(brand, navTabs, rightSide);
+        header.addClassName("sap-shell-bar");
         header.setWidthFull();
         header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         header.setAlignItems(FlexComponent.Alignment.CENTER);

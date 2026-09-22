@@ -12,7 +12,7 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -27,7 +27,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.shared.Registration;
 
-@PageTitle("Disponibilidad de Parqueo | SmartParking")
+@PageTitle("Disponibilidad de Parqueo")
 @Route(value = "", layout = MainLayout.class)
 @RouteAlias(value = "disponibilidad", layout = MainLayout.class)
 public class AvailabilityView extends VerticalLayout {
@@ -36,15 +36,14 @@ public class AvailabilityView extends VerticalLayout {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
             .withZone(ZoneId.systemDefault());
 
-    // Componentes interactivos que se actualizan
     private final Span maxCapacitySpan = new Span("0");
     private final Span currentCapacitySpan = new Span("0");
     private final Span availableCapacitySpan = new Span("0");
     private final Span percentageSpan = new Span("0%");
     private final Span lastUpdatedSpan = new Span("Sin registrar");
-    private final Span statusPill = new Span();
+    private final Span statusBadge = new Span();
     private final Div progressBarFill = new Div();
-    private final H1 parkingNameTitle = new H1("Estacionamiento");
+    private final H2 parkingNameTitle = new H2("Estacionamiento Central");
     private final Paragraph parkingAddressText = new Paragraph("Cargando ubicación...");
 
     private Registration pollRegistration;
@@ -55,145 +54,169 @@ public class AvailabilityView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
         setSpacing(true);
-        setMaxWidth("1200px");
+        setMaxWidth("1250px");
         getStyle().set("margin", "0 auto");
+        getStyle().set("padding-top", "1.5rem");
 
         createHeaderSection();
-        createMetricsGrid();
-        createProgressBarSection();
-        createFooterActions();
+        createKpiTilesGrid();
+        createTelemetryPanel();
+        createActionToolbar();
 
         refreshData();
     }
 
     private void createHeaderSection() {
-        parkingNameTitle.getStyle().set("margin-bottom", "0.25rem");
-        parkingNameTitle.getStyle().set("font-size", "2.2rem");
+        Div headerPanel = new Div();
+        headerPanel.addClassName("sap-panel");
+        headerPanel.setWidthFull();
 
-        parkingAddressText.getStyle().set("color", "var(--text-muted)");
-        parkingAddressText.getStyle().set("margin-top", "0");
+        parkingNameTitle.getStyle().set("color", "#102a43");
+        parkingNameTitle.getStyle().set("font-size", "1.45rem");
+        parkingNameTitle.getStyle().set("font-weight", "600");
+        parkingNameTitle.getStyle().set("margin", "0 0 0.25rem 0");
+
+        parkingAddressText.getStyle().set("color", "var(--sap-text-muted)");
+        parkingAddressText.getStyle().set("margin", "0");
+        parkingAddressText.getStyle().set("font-size", "0.9rem");
 
         VerticalLayout titles = new VerticalLayout(parkingNameTitle, parkingAddressText);
         titles.setPadding(false);
         titles.setSpacing(false);
 
-        HorizontalLayout headerBar = new HorizontalLayout(titles, statusPill);
-        headerBar.setWidthFull();
-        headerBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        headerBar.setAlignItems(FlexComponent.Alignment.CENTER);
+        HorizontalLayout bar = new HorizontalLayout(titles, statusBadge);
+        bar.setWidthFull();
+        bar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        bar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        add(headerBar);
+        headerPanel.add(bar);
+        add(headerPanel);
     }
 
-    private void createMetricsGrid() {
-        HorizontalLayout metricsGrid = new HorizontalLayout();
-        metricsGrid.setWidthFull();
-        metricsGrid.setSpacing(true);
+    private void createKpiTilesGrid() {
+        HorizontalLayout tilesGrid = new HorizontalLayout();
+        tilesGrid.setWidthFull();
+        tilesGrid.setSpacing(true);
 
         // 1. Capacidad Máxima
-        Div maxCard = createMetricCard("Capacidad Total", maxCapacitySpan, "Espacios totales del recinto", "rgba(99, 102, 241, 0.4)");
+        Div maxTile = createKpiTile("Capacidad Máxima", maxCapacitySpan, "Espacios totales definidos",
+                "indicator-navy");
 
-        // 2. Espacios Ocupados
-        Div currentCard = createMetricCard("Ocupación Actual", currentCapacitySpan, "Vehículos estacionados", "rgba(245, 158, 11, 0.4)");
+        // 2. Cantidad Actual
+        Div currentTile = createKpiTile("Cantidad Actual", currentCapacitySpan, "Vehículos ocupando plaza",
+                "indicator-blue");
 
-        // 3. Espacios Disponibles
-        Div availableCard = createMetricCard("Espacios Libres", availableCapacitySpan, "Listos para recibir vehículos", "rgba(16, 185, 129, 0.4)");
+        // 3. Disponibles
+        Div availableTile = createKpiTile("Plazas Disponibles", availableCapacitySpan, "Capacidad libre de ingreso",
+                "indicator-green");
 
-        // 4. Porcentaje
-        Div percentCard = createMetricCard("Nivel de Ocupación", percentageSpan, "Capacidad utilizada", "rgba(139, 92, 246, 0.4)");
+        // 4. Nivel de Ocupación
+        Div percentTile = createKpiTile("Porcentaje de Ocupación", percentageSpan, "Utilización del estacionamiento",
+                "indicator-amber");
 
-        metricsGrid.add(maxCard, currentCard, availableCard, percentCard);
-        add(metricsGrid);
+        tilesGrid.add(maxTile, currentTile, availableTile, percentTile);
+        add(tilesGrid);
     }
 
-    private Div createMetricCard(String title, Span valueSpan, String subtitle, String borderColor) {
-        Div card = new Div();
-        card.addClassName("metric-card");
-        card.getStyle().set("flex", "1");
-        card.getStyle().set("border-left", "4px solid " + borderColor);
+    private Div createKpiTile(String title, Span valueSpan, String subtext, String indicatorClass) {
+        Div tile = new Div();
+        tile.addClassName("sap-kpi-tile");
+        tile.addClassName(indicatorClass);
 
         Span titleSpan = new Span(title);
-        titleSpan.addClassName("metric-title");
+        titleSpan.addClassName("sap-kpi-label");
 
-        valueSpan.addClassName("metric-value");
+        valueSpan.addClassName("sap-kpi-value");
 
-        Span subSpan = new Span(subtitle);
-        subSpan.addClassName("metric-subtitle");
+        Span subSpan = new Span(subtext);
+        subSpan.addClassName("sap-kpi-subtext");
 
-        card.add(titleSpan, valueSpan, subSpan);
-        return card;
+        tile.add(titleSpan, valueSpan, subSpan);
+        return tile;
     }
 
-    private void createProgressBarSection() {
-        Div section = new Div();
-        section.addClassName("metric-card");
-        section.setWidthFull();
+    private void createTelemetryPanel() {
+        Div panel = new Div();
+        panel.addClassName("sap-panel");
+        panel.setWidthFull();
 
-        H3 title = new H3("Monitoreo de Aforo en Tiempo Real");
-        title.getStyle().set("margin-top", "0");
-        title.getStyle().set("margin-bottom", "0.75rem");
+        Div panelHeader = new Div();
+        panelHeader.addClassName("sap-panel-header");
 
+        H3 panelTitle = new H3("Monitoreo de Ocupación y Registro de Telemetría");
+        panelTitle.addClassName("sap-panel-title");
+
+        Span autoRefreshTag = new Span("Muestreo en tiempo real (3s)");
+        autoRefreshTag.addClassName("sap-badge");
+        autoRefreshTag.addClassName("neutral");
+
+        panelHeader.add(panelTitle, autoRefreshTag);
+
+        // Barra de progreso cuadrada corporativa
         Div track = new Div();
-        track.addClassName("progress-track");
+        track.addClassName("sap-progress-track");
 
-        progressBarFill.addClassName("progress-fill");
+        progressBarFill.addClassName("sap-progress-fill");
         progressBarFill.setWidth("0%");
-        progressBarFill.getStyle().set("background", "linear-gradient(90deg, #10b981 0%, #6366f1 100%)");
+        progressBarFill.getStyle().set("background-color", "var(--sap-primary)");
 
         track.add(progressBarFill);
 
-        HorizontalLayout timeInfo = new HorizontalLayout();
-        timeInfo.setWidthFull();
-        timeInfo.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        timeInfo.getStyle().set("margin-top", "0.75rem");
+        // Detalles de última modificación
+        HorizontalLayout infoRow = new HorizontalLayout();
+        infoRow.setWidthFull();
+        infoRow.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        infoRow.setAlignItems(FlexComponent.Alignment.CENTER);
+        infoRow.getStyle().set("margin-top", "1rem");
 
-        Span labelUpdated = new Span("Última actualización de telemetría:");
-        labelUpdated.getStyle().set("color", "var(--text-muted)");
-        labelUpdated.getStyle().set("font-size", "0.85rem");
+        Span labelUpdated = new Span("Última fecha de modificación:");
+        labelUpdated.getStyle().set("color", "var(--sap-text-muted)");
+        labelUpdated.getStyle().set("font-size", "0.9rem");
+        labelUpdated.getStyle().set("font-weight", "500");
 
+        lastUpdatedSpan.getStyle().set("color", "var(--sap-text)");
+        lastUpdatedSpan.getStyle().set("font-size", "0.9rem");
         lastUpdatedSpan.getStyle().set("font-weight", "600");
-        lastUpdatedSpan.getStyle().set("color", "var(--text-main)");
-        lastUpdatedSpan.getStyle().set("font-size", "0.85rem");
 
         HorizontalLayout lastUpdatedLayout = new HorizontalLayout(labelUpdated, lastUpdatedSpan);
         lastUpdatedLayout.setSpacing(true);
 
-        Span autoRefreshBadge = new Span("⚡ Auto-refresco activo cada 3s");
-        autoRefreshBadge.getStyle().set("color", "#34d399");
-        autoRefreshBadge.getStyle().set("font-size", "0.8rem");
-        autoRefreshBadge.getStyle().set("font-weight", "600");
+        Span systemNotice = new Span("Protocolo de Comunicación: AMQP / RabbitMQ Activo");
+        systemNotice.getStyle().set("color", "var(--sap-text-secondary)");
+        systemNotice.getStyle().set("font-size", "0.85rem");
 
-        timeInfo.add(lastUpdatedLayout, autoRefreshBadge);
+        infoRow.add(lastUpdatedLayout, systemNotice);
 
-        section.add(title, track, timeInfo);
-        add(section);
+        panel.add(panelHeader, track, infoRow);
+        add(panel);
     }
 
-    private void createFooterActions() {
-        Button refreshBtn = new Button("Refrescar Datos", VaadinIcon.REFRESH.create(), e -> {
-            refreshData();
-            Notification.show("Datos actualizados", 1500, Notification.Position.BOTTOM_END);
-        });
-        refreshBtn.addClassName("btn-primary-glow");
+    private void createActionToolbar() {
+        HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.setWidthFull();
+        toolbar.setSpacing(true);
 
-        Button simulateEntryBtn = new Button("Simular Entrada (Ticket +1)", VaadinIcon.CAR.create(), e -> {
+        Button refreshBtn = new Button("Actualizar Datos", VaadinIcon.REFRESH.create(), e -> {
+            refreshData();
+            Notification.show("Información actualizada correctamente", 1500, Notification.Position.BOTTOM_END);
+        });
+        refreshBtn.addClassName("sap-btn-primary");
+
+        Button simulateEntryBtn = new Button("Simular Entrada de Vehículo (+1)", VaadinIcon.CAR.create(), e -> {
             try {
                 var ticket = parkingService.createManualTicket();
                 refreshData();
-                Notification n = Notification.show("✅ Entrada registrada! Ticket: " + ticket.getUuid(), 4000, Notification.Position.TOP_CENTER);
+                Notification n = Notification.show("Ingreso registrado. Ticket: " + ticket.getUuid(), 3500,
+                        Notification.Position.TOP_CENTER);
                 n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } catch (Exception ex) {
                 Notification.show("Error al registrar entrada: " + ex.getMessage(), 3000, Notification.Position.MIDDLE);
             }
         });
-        simulateEntryBtn.getStyle().set("color", "#a5b4fc");
-        simulateEntryBtn.getStyle().set("border", "1px solid rgba(99, 102, 241, 0.4)");
-        simulateEntryBtn.getStyle().set("background", "rgba(99, 102, 241, 0.1)");
-        simulateEntryBtn.getStyle().set("border-radius", "12px");
+        simulateEntryBtn.addClassName("sap-btn-secondary");
 
-        HorizontalLayout actions = new HorizontalLayout(refreshBtn, simulateEntryBtn);
-        actions.setSpacing(true);
-        add(actions);
+        toolbar.add(refreshBtn, simulateEntryBtn);
+        add(toolbar);
     }
 
     private void refreshData() {
@@ -201,7 +224,8 @@ public class AvailabilityView extends VerticalLayout {
             ParkingModel parking = parkingService.getParkingInfo();
             if (parking != null) {
                 parkingNameTitle.setText(parking.getName() != null ? parking.getName() : "Estacionamiento Central");
-                parkingAddressText.setText(parking.getAddress() != null ? parking.getAddress() : "Ubicación del parqueo");
+                parkingAddressText
+                        .setText(parking.getAddress() != null ? parking.getAddress() : "Campus Universitario");
             }
 
             TelemetryDto telemetry = parkingService.obtainTelemetry();
@@ -217,32 +241,32 @@ public class AvailabilityView extends VerticalLayout {
             percentageSpan.setText(percentage + "%");
             progressBarFill.setWidth(Math.min(100, percentage) + "%");
 
-            // Configurar color de barra y badge según aforo
-            statusPill.removeAll();
-            statusPill.setClassName("status-pill");
+            // Configurar color y badge de aforo
+            statusBadge.removeAll();
+            statusBadge.setClassName("sap-badge");
 
             if (percentage >= 100) {
-                statusPill.addClassName("danger");
-                statusPill.setText("🚫 PARQUEO LLENO");
-                progressBarFill.getStyle().set("background", "linear-gradient(90deg, #f59e0b 0%, #ef4444 100%)");
+                statusBadge.addClassName("danger");
+                statusBadge.setText("PARQUEO LLENO");
+                progressBarFill.getStyle().set("background-color", "var(--sap-danger)");
             } else if (percentage >= 75) {
-                statusPill.addClassName("warning");
-                statusPill.setText("⚠️ POCOS ESPACIOS");
-                progressBarFill.getStyle().set("background", "linear-gradient(90deg, #10b981 0%, #f59e0b 100%)");
+                statusBadge.addClassName("warning");
+                statusBadge.setText("DISPONIBILIDAD LIMITADA");
+                progressBarFill.getStyle().set("background-color", "var(--sap-warning)");
             } else {
-                statusPill.addClassName("success");
-                statusPill.setText("✅ PLAZAS DISPONIBLES");
-                progressBarFill.getStyle().set("background", "linear-gradient(90deg, #10b981 0%, #6366f1 100%)");
+                statusBadge.addClassName("success");
+                statusBadge.setText("PLAZAS DISPONIBLES");
+                progressBarFill.getStyle().set("background-color", "var(--sap-success)");
             }
 
             Instant lastUpdated = telemetry.lastUpdated();
             if (lastUpdated != null) {
                 lastUpdatedSpan.setText(formatter.format(lastUpdated));
             } else {
-                lastUpdatedSpan.setText("Recién iniciado");
+                lastUpdatedSpan.setText("Sin registro previo");
             }
         } catch (Exception e) {
-            lastUpdatedSpan.setText("Error al conectar: " + e.getMessage());
+            lastUpdatedSpan.setText("Error de comunicación: " + e.getMessage());
         }
     }
 
@@ -250,7 +274,7 @@ public class AvailabilityView extends VerticalLayout {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         UI ui = attachEvent.getUI();
-        ui.setPollInterval(3000); // Polling cada 3 segundos
+        ui.setPollInterval(3000);
         pollRegistration = ui.addPollListener(event -> refreshData());
     }
 

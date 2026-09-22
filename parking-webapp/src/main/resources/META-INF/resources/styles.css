@@ -1,308 +1,417 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --app-bg: #0b0f19;
-  --surface-card: rgba(18, 24, 38, 0.85);
-  --surface-card-hover: rgba(28, 36, 56, 0.95);
-  --surface-border: rgba(255, 255, 255, 0.08);
-  --surface-border-bright: rgba(99, 102, 241, 0.3);
+  /* SAP Business One / Enterprise Light Theme Palette */
+  --sap-bg: #f4f6f9;
+  --sap-surface: #ffffff;
+  --sap-surface-hover: #f8fafc;
+  --sap-surface-active: #eef2f7;
   
-  --color-primary: #6366f1;
-  --color-primary-glow: rgba(99, 102, 241, 0.35);
-  --color-success: #10b981;
-  --color-success-glow: rgba(16, 185, 129, 0.35);
-  --color-warning: #f59e0b;
-  --color-warning-glow: rgba(245, 158, 11, 0.35);
-  --color-danger: #ef4444;
-  --color-danger-glow: rgba(239, 68, 68, 0.35);
+  --sap-border: #d2dbe5;
+  --sap-border-dark: #b6c4d4;
+  --sap-border-light: #e5ebf2;
+
+  --sap-header-bg: #1c3553;
+  --sap-header-text: #ffffff;
   
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
+  --sap-primary: #0a6ed1;
+  --sap-primary-hover: #0854a0;
+  --sap-primary-light: #e8f3fc;
   
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --sap-success: #107e3e;
+  --sap-success-bg: #eaf5ea;
+  --sap-success-border: #b8e2b8;
+
+  --sap-warning: #c25e00;
+  --sap-warning-bg: #fff8eb;
+  --sap-warning-border: #fcd79d;
+
+  --sap-danger: #bb0000;
+  --sap-danger-bg: #fdf0f0;
+  --sap-danger-border: #f6c1c1;
+
+  --sap-text: #1a2530;
+  --sap-text-muted: #556b82;
+  --sap-text-secondary: #74879b;
+
+  --sap-radius: 4px;
+  --sap-radius-sm: 2px;
+  --sap-shadow-card: 0 1px 3px rgba(0, 20, 40, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --sap-shadow-hover: 0 4px 10px rgba(0, 30, 60, 0.12);
+  
+  --font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
 }
 
 body {
   margin: 0;
-  background-color: var(--app-bg);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
-  background-attachment: fixed;
-  color: var(--text-main);
-  font-family: var(--font-body);
+  padding: 0;
+  background-color: var(--sap-bg) !important;
+  color: var(--sap-text) !important;
+  font-family: var(--font-family) !important;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Nav Header */
-.app-navbar {
-  background: rgba(11, 15, 25, 0.85) !important;
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--surface-border);
-  padding: 0.75rem 2rem;
+/* Header & Shell Bar (Estilo SAP Business One / Fiori) */
+.sap-shell-bar {
+  background: var(--sap-header-bg) !important;
+  border-bottom: 2px solid #0a6ed1 !important;
+  padding: 0 1.5rem !important;
+  height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-.brand-badge {
-  display: inline-flex;
+.sap-brand-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sap-logo-badge {
+  background: #0a6ed1;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--sap-radius-sm);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sap-app-title {
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  letter-spacing: -0.01em;
+}
+
+.sap-nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+  height: 100%;
+  align-items: stretch;
+}
+
+.sap-nav-tab {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.15rem;
-  padding: 0.4rem 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px var(--color-primary-glow);
+  color: #d1dfed !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  padding: 0 1.25rem !important;
+  text-decoration: none !important;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s ease;
+  height: 52px;
+  box-sizing: border-box;
 }
 
-.nav-tab-link {
-  font-family: var(--font-heading);
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  border-radius: 10px;
-  padding: 0.5rem 1.1rem;
-  transition: all 0.25s ease;
-  text-decoration: none;
+.sap-nav-tab:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.nav-tab-link:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.05);
+.sap-nav-tab.active-tab {
+  color: #ffffff !important;
+  border-bottom: 3px solid #f0ab00 !important; /* SAP Accent Gold */
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 600 !important;
 }
 
-.nav-tab-link.active-tab {
-  color: #ffffff;
-  background: rgba(99, 102, 241, 0.2);
-  border: 1px solid var(--surface-border-bright);
+/* Tarjetas Cuadradas SAP (Tiles / Panels) */
+.sap-panel {
+  background: var(--sap-surface) !important;
+  border: 1px solid var(--sap-border) !important;
+  border-radius: var(--sap-radius) !important;
+  box-shadow: var(--sap-shadow-card) !important;
+  padding: 1.25rem 1.5rem !important;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
 }
 
-/* Dashboard Cards */
-.metric-card {
-  background: var(--surface-card);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--surface-border);
-  border-radius: 20px;
-  padding: 1.75rem;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-}
-
-.metric-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--surface-border-bright);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
-}
-
-.metric-title {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 0.5rem;
-}
-
-.metric-value {
-  font-family: var(--font-heading);
-  font-size: 2.75rem;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1.1;
-  margin: 0.25rem 0;
-}
-
-.metric-subtitle {
-  font-size: 0.85rem;
-  color: var(--text-subtle);
-}
-
-/* Status Badges */
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-}
-
-.status-pill.success {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.status-pill.warning {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.status-pill.danger {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-/* Progress bar styling */
-.progress-track {
-  width: 100%;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 9999px;
-  overflow: hidden;
-  position: relative;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 9999px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease;
-}
-
-/* QR Scanner Container & Animation */
-.qr-scanner-wrapper {
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.qr-scanner-container {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #000;
-  border: 2px solid rgba(99, 102, 241, 0.4);
-  box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
-}
-
-/* Ticket Receipt Box */
-.ticket-receipt-card {
-  background: linear-gradient(180deg, rgba(24, 32, 50, 0.95) 0%, rgba(15, 20, 32, 0.95) 100%);
-  border: 1px solid var(--surface-border);
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-}
-
-.ticket-receipt-card .receipt-header {
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
-  padding-bottom: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.receipt-row {
+.sap-panel-header {
+  border-bottom: 1px solid var(--sap-border-light);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 0;
-  font-size: 0.95rem;
 }
 
-.receipt-label {
-  color: var(--text-muted);
-}
-
-.receipt-value {
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.receipt-total {
-  border-top: 1px dashed rgba(255, 255, 255, 0.15);
-  padding-top: 1.25rem;
-  margin-top: 1rem;
-}
-
-.receipt-total .amount-highlight {
-  font-family: var(--font-heading);
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: #34d399;
-}
-
-/* Button Customizations */
-.btn-primary-glow {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  font-family: var(--font-heading) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 15px var(--color-primary-glow) !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.btn-primary-glow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--color-primary-glow) !important;
-}
-
-.btn-success-glow {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  font-family: var(--font-heading) !important;
+.sap-panel-title {
   font-size: 1.1rem !important;
-  padding: 0.75rem 2rem !important;
-  border-radius: 14px !important;
-  box-shadow: 0 6px 20px var(--color-success-glow) !important;
-  transition: all 0.2s ease !important;
+  font-weight: 600 !important;
+  color: #0f2a4a !important;
+  margin: 0 !important;
 }
 
-.btn-success-glow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--color-success-glow) !important;
+/* SAP KPI Tile (Cuadrado con barra superior indicadora) */
+.sap-kpi-tile {
+  background: var(--sap-surface);
+  border: 1px solid var(--sap-border);
+  border-radius: var(--sap-radius);
+  box-shadow: var(--sap-shadow-card);
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 125px;
+  box-sizing: border-box;
+  position: relative;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Exit Status Cards */
-.exit-banner-success {
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
-  border: 2px solid #10b981;
-  border-radius: 20px;
-  padding: 2.5rem;
-  text-align: center;
-  box-shadow: 0 0 35px rgba(16, 185, 129, 0.3);
-  animation: pulseSuccess 2s infinite ease-in-out;
+.sap-kpi-tile:hover {
+  border-color: var(--sap-primary);
+  box-shadow: var(--sap-shadow-hover);
 }
 
-.exit-banner-danger {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.25) 0%, rgba(239, 68, 68, 0.15) 100%);
-  border: 2px solid #ef4444;
-  border-radius: 20px;
-  padding: 2.5rem;
-  text-align: center;
-  box-shadow: 0 0 35px rgba(239, 68, 68, 0.3);
-  animation: pulseDanger 2s infinite ease-in-out;
+.sap-kpi-tile.indicator-blue {
+  border-top: 4px solid var(--sap-primary);
 }
 
-@keyframes pulseSuccess {
-  0% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.45); }
-  100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+.sap-kpi-tile.indicator-green {
+  border-top: 4px solid var(--sap-success);
 }
 
-@keyframes pulseDanger {
-  0% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.45); }
-  100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+.sap-kpi-tile.indicator-amber {
+  border-top: 4px solid var(--sap-warning);
 }
 
-/* Typography styles */
-h1, h2, h3, h4, h5 {
-  font-family: var(--font-heading);
+.sap-kpi-tile.indicator-navy {
+  border-top: 4px solid #1c3553;
+}
+
+.sap-kpi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sap-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.sap-kpi-value {
+  font-size: 2.3rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  color: #102a43;
+  line-height: 1;
+  margin: 0.25rem 0;
+  font-family: var(--font-family);
+}
+
+.sap-kpi-subtext {
+  font-size: 0.8rem;
+  color: var(--sap-text-secondary);
+}
+
+/* Estados / Badges Cuadrados */
+.sap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--sap-radius-sm);
+  border: 1px solid;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.sap-badge.success {
+  background-color: var(--sap-success-bg);
+  color: var(--sap-success);
+  border-color: var(--sap-success-border);
+}
+
+.sap-badge.warning {
+  background-color: var(--sap-warning-bg);
+  color: var(--sap-warning);
+  border-color: var(--sap-warning-border);
+}
+
+.sap-badge.danger {
+  background-color: var(--sap-danger-bg);
+  color: var(--sap-danger);
+  border-color: var(--sap-danger-border);
+}
+
+.sap-badge.neutral {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+/* Barra de Ocupación Cuadrada (Corporate Progress Track) */
+.sap-progress-track {
+  width: 100%;
+  height: 10px;
+  background-color: #e5ebf2;
+  border-radius: var(--sap-radius-sm);
+  border: 1px solid #d2dbe5;
+  overflow: hidden;
+  position: relative;
+}
+
+.sap-progress-fill {
+  height: 100%;
+  border-radius: var(--sap-radius-sm);
+  transition: width 0.4s ease, background-color 0.3s ease;
+}
+
+/* Botones Corporativos SAP */
+.sap-btn-primary {
+  background-color: var(--sap-primary) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--sap-primary-hover) !important;
+  border-radius: var(--sap-radius) !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  padding: 0.5rem 1.25rem !important;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sap-btn-primary:hover {
+  background-color: var(--sap-primary-hover) !important;
+}
+
+.sap-btn-success {
+  background-color: var(--sap-success) !important;
+  color: #ffffff !important;
+  border: 1px solid #0d6632 !important;
+  border-radius: var(--sap-radius) !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  padding: 0.6rem 1.5rem !important;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sap-btn-success:hover {
+  background-color: #0d6632 !important;
+}
+
+.sap-btn-secondary {
+  background-color: #ffffff !important;
+  color: #1c3553 !important;
+  border: 1px solid var(--sap-border-dark) !important;
+  border-radius: var(--sap-radius) !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  padding: 0.45rem 1rem !important;
+}
+
+.sap-btn-secondary:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Recibo / Factura de Ticket Estilo Formulario Empresarial */
+.sap-invoice-panel {
+  background: #ffffff;
+  border: 1px solid var(--sap-border);
+  border-top: 3px solid var(--sap-primary);
+  border-radius: var(--sap-radius);
+  box-shadow: var(--sap-shadow-card);
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.sap-invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.sap-invoice-table tr {
+  border-bottom: 1px solid var(--sap-border-light);
+}
+
+.sap-invoice-table tr:last-child {
+  border-bottom: none;
+}
+
+.sap-invoice-table td {
+  padding: 0.65rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+.sap-invoice-table td.label-cell {
+  color: var(--sap-text-muted);
+  font-weight: 500;
+  width: 45%;
+}
+
+.sap-invoice-table td.value-cell {
+  color: var(--sap-text);
+  font-weight: 600;
+  text-align: right;
+  font-family: var(--font-family);
+}
+
+.sap-invoice-total-box {
+  background-color: #f8fafc;
+  border: 1px solid var(--sap-border);
+  border-radius: var(--sap-radius);
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sap-invoice-total-amount {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--sap-success);
+}
+
+/* Escáner de Cámara Cuadrado */
+.sap-scanner-box {
+  background: #ffffff;
+  border: 1px solid var(--sap-border);
+  border-radius: var(--sap-radius);
+  padding: 1.25rem;
+  box-shadow: var(--sap-shadow-card);
+}
+
+.qr-scanner-container {
+  border: 2px solid var(--sap-border-dark) !important;
+  border-radius: var(--sap-radius) !important;
+  background-color: #000000;
+  box-shadow: none !important;
+}
+
+/* Banner de Salida Empresarial (Alert Boxes Cuadrados) */
+.sap-alert-banner {
+  border-radius: var(--sap-radius);
+  padding: 2rem;
+  border: 1px solid;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.sap-alert-banner.success {
+  background-color: var(--sap-success-bg);
+  border-color: var(--sap-success-border);
+  border-left: 6px solid var(--sap-success);
+}
+
+.sap-alert-banner.danger {
+  background-color: var(--sap-danger-bg);
+  border-color: var(--sap-danger-border);
+  border-left: 6px solid var(--sap-danger);
+}
+
+/* Encabezados y Tipografía Corporativa */
+h1, h2, h3, h4, h5 {
+  color: #102a43;
+  font-family: var(--font-family);
+  font-weight: 600;
+  margin: 0;
 }

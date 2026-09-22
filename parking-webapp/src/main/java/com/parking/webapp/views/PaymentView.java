@@ -10,10 +10,9 @@ import com.parking.webapp.model.TicketModel;
 import com.parking.webapp.service.ParkingWebService;
 import com.parking.webapp.views.components.QrScannerComponent;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -26,7 +25,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Pago de Ticket | SmartParking")
+@PageTitle("Cobro de Ticket | SAP Business One")
 @Route(value = "pago", layout = MainLayout.class)
 public class PaymentView extends VerticalLayout {
 
@@ -36,7 +35,7 @@ public class PaymentView extends VerticalLayout {
 
     private final QrScannerComponent qrScanner = new QrScannerComponent();
     private final TextField manualCodeField = new TextField();
-    private final Div receiptContainer = new Div();
+    private final Div invoiceContainer = new Div();
     private TicketModel currentTicket = null;
 
     public PaymentView(ParkingWebService parkingService) {
@@ -45,78 +44,81 @@ public class PaymentView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
         setSpacing(true);
-        setMaxWidth("1200px");
+        setMaxWidth("1250px");
         getStyle().set("margin", "0 auto");
+        getStyle().set("padding-top", "1.5rem");
 
         createHeaderSection();
-        createMainContent();
+        createMainLayout();
     }
 
     private void createHeaderSection() {
-        H1 title = new H1("Módulo de Cobro y Pago de Ticket");
-        title.getStyle().set("margin-bottom", "0.25rem");
-        title.getStyle().set("font-size", "2.2rem");
+        Div headerPanel = new Div();
+        headerPanel.addClassName("sap-panel");
+        headerPanel.setWidthFull();
 
-        Paragraph subtitle = new Paragraph("Aproxime el código QR del ticket a la cámara web o ingrese el identificador manualmente.");
-        subtitle.getStyle().set("color", "var(--text-muted)");
-        subtitle.getStyle().set("margin-top", "0");
+        H2 title = new H2("Caja y Liquidación de Tickets");
+        title.getStyle().set("color", "#102a43");
+        title.getStyle().set("font-size", "1.45rem");
+        title.getStyle().set("font-weight", "600");
+        title.getStyle().set("margin", "0 0 0.25rem 0");
 
-        add(new VerticalLayout(title, subtitle));
+        Paragraph subtitle = new Paragraph("Presente el código QR impreso en el ticket frente al escáner óptico o digite el identificador.");
+        subtitle.getStyle().set("color", "var(--sap-text-muted)");
+        subtitle.getStyle().set("margin", "0");
+        subtitle.getStyle().set("font-size", "0.9rem");
+
+        headerPanel.add(new VerticalLayout(title, subtitle));
+        add(headerPanel);
     }
 
-    private void createMainContent() {
+    private void createMainLayout() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
         layout.setSpacing(true);
 
-        // Columna izquierda: Cámara y Escáner QR
-        VerticalLayout leftColumn = new VerticalLayout();
-        leftColumn.setWidth("50%");
-        leftColumn.setSpacing(true);
-        leftColumn.setPadding(false);
+        // Columna Izquierda: Escáner y Consulta Manual
+        VerticalLayout leftCol = new VerticalLayout();
+        leftCol.setWidth("50%");
+        leftCol.setSpacing(true);
+        leftCol.setPadding(false);
 
-        Div scannerWrapper = new Div();
-        scannerWrapper.addClassName("qr-scanner-wrapper");
-        scannerWrapper.setWidthFull();
+        // Panel de Cámara
+        Div scannerPanel = new Div();
+        scannerPanel.addClassName("sap-panel");
+        scannerPanel.setWidthFull();
 
-        H2 scannerHeader = new H2("Escáner de Ticket QR");
-        scannerHeader.getStyle().set("font-size", "1.2rem");
-        scannerHeader.getStyle().set("margin-top", "0");
-        scannerHeader.getStyle().set("color", "var(--text-main)");
+        Div scannerHeader = new Div();
+        scannerHeader.addClassName("sap-panel-header");
+        H3 scannerTitle = new H3("Lector Óptico QR (Cámara)");
+        scannerTitle.addClassName("sap-panel-title");
+
+        Button restartCameraBtn = new Button("Reconectar Cámara", VaadinIcon.CAMERA.create(), e -> qrScanner.startScanning());
+        restartCameraBtn.addClassName("sap-btn-secondary");
+
+        scannerHeader.add(scannerTitle, restartCameraBtn);
 
         qrScanner.setOnScanListener(this::handleQrScanned);
-        qrScanner.setOnErrorListener(err -> {
-            // Error silencioso o advertencia suave
-            System.err.println("QR Scanner info: " + err);
-        });
+        qrScanner.setOnErrorListener(err -> System.err.println("QR Scanner notice: " + err));
 
-        scannerWrapper.add(scannerHeader, qrScanner);
+        scannerPanel.add(scannerHeader, qrScanner);
 
-        // Controles de cámara y entrada manual
-        HorizontalLayout cameraControls = new HorizontalLayout();
-        cameraControls.setWidthFull();
-        cameraControls.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        // Panel de Entrada Manual
+        Div manualPanel = new Div();
+        manualPanel.addClassName("sap-panel");
+        manualPanel.setWidthFull();
 
-        Button restartCameraBtn = new Button("Reiniciar Cámara", VaadinIcon.CAMERA.create(), e -> qrScanner.startScanning());
-        restartCameraBtn.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        Div manualHeader = new Div();
+        manualHeader.addClassName("sap-panel-header");
+        H3 manualTitle = new H3("Búsqueda Manual de Ticket");
+        manualTitle.addClassName("sap-panel-title");
+        manualHeader.add(manualTitle);
 
-        cameraControls.add(restartCameraBtn);
-
-        // Entrada manual como respaldo
-        Div manualSection = new Div();
-        manualSection.addClassName("metric-card");
-        manualSection.setWidthFull();
-
-        Span manualTitle = new Span("Entrada Manual o Pruebas:");
-        manualTitle.getStyle().set("font-weight", "600");
-        manualTitle.getStyle().set("font-size", "0.9rem");
-        manualTitle.getStyle().set("color", "var(--text-muted)");
-
-        manualCodeField.setPlaceholder("Pegue o escriba UUID...");
+        manualCodeField.setPlaceholder("Ingrese código UUID del ticket...");
         manualCodeField.setWidthFull();
         manualCodeField.setClearButtonVisible(true);
 
-        Button searchBtn = new Button("Consultar", VaadinIcon.SEARCH.create(), e -> {
+        Button searchBtn = new Button("Consultar Ticket", VaadinIcon.SEARCH.create(), e -> {
             String code = manualCodeField.getValue();
             if (code != null && !code.isBlank()) {
                 handleQrScanned(code.trim());
@@ -124,209 +126,204 @@ public class PaymentView extends VerticalLayout {
                 Notification.show("Ingrese un código de ticket", 2000, Notification.Position.MIDDLE);
             }
         });
-        searchBtn.addClassName("btn-primary-glow");
+        searchBtn.addClassName("sap-btn-primary");
 
-        HorizontalLayout manualInputLayout = new HorizontalLayout(manualCodeField, searchBtn);
-        manualInputLayout.setWidthFull();
-        manualInputLayout.setFlexGrow(1, manualCodeField);
+        HorizontalLayout inputRow = new HorizontalLayout(manualCodeField, searchBtn);
+        inputRow.setWidthFull();
+        inputRow.setFlexGrow(1, manualCodeField);
+        inputRow.setAlignItems(FlexComponent.Alignment.BASELINE);
 
-        // Atajos rápidos para probar
-        HorizontalLayout testBadges = new HorizontalLayout();
-        testBadges.setSpacing(true);
-        testBadges.getStyle().set("margin-top", "0.5rem");
+        // Accesos de prueba rápida
+        HorizontalLayout demoRow = new HorizontalLayout();
+        demoRow.setSpacing(true);
+        demoRow.setAlignItems(FlexComponent.Alignment.CENTER);
+        demoRow.getStyle().set("margin-top", "0.75rem");
 
-        Button demoPendingBtn = new Button("DEMO-PENDING-001", e -> {
+        Span demoLabel = new Span("Tickets Demo:");
+        demoLabel.getStyle().set("font-size", "0.85rem");
+        demoLabel.getStyle().set("color", "var(--sap-text-muted)");
+        demoLabel.getStyle().set("font-weight", "600");
+
+        Button btnDemo1 = new Button("DEMO-PENDING-001 (Pendiente)", e -> {
             manualCodeField.setValue("DEMO-PENDING-001");
             handleQrScanned("DEMO-PENDING-001");
         });
-        demoPendingBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+        btnDemo1.addClassName("sap-btn-secondary");
 
-        Button demoPaidBtn = new Button("DEMO-PAID-002", e -> {
+        Button btnDemo2 = new Button("DEMO-PAID-002 (Pagado)", e -> {
             manualCodeField.setValue("DEMO-PAID-002");
             handleQrScanned("DEMO-PAID-002");
         });
-        demoPaidBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+        btnDemo2.addClassName("sap-btn-secondary");
 
-        testBadges.add(new Span("Pruebas:"), demoPendingBtn, demoPaidBtn);
+        demoRow.add(demoLabel, btnDemo1, btnDemo2);
 
-        manualSection.add(manualTitle, manualInputLayout, testBadges);
+        manualPanel.add(manualHeader, inputRow, demoRow);
 
-        leftColumn.add(scannerWrapper, cameraControls, manualSection);
+        leftCol.add(scannerPanel, manualPanel);
 
-        // Columna derecha: Recibo de cobro
-        VerticalLayout rightColumn = new VerticalLayout();
-        rightColumn.setWidth("50%");
-        rightColumn.setSpacing(true);
-        rightColumn.setPadding(false);
+        // Columna Derecha: Recibo de Liquidación
+        VerticalLayout rightCol = new VerticalLayout();
+        rightCol.setWidth("50%");
+        rightCol.setSpacing(true);
+        rightCol.setPadding(false);
 
-        receiptContainer.setWidthFull();
-        showWaitingReceipt();
+        invoiceContainer.setWidthFull();
+        showEmptyInvoiceState();
 
-        rightColumn.add(receiptContainer);
+        rightCol.add(invoiceContainer);
 
-        layout.add(leftColumn, rightColumn);
+        layout.add(leftCol, rightCol);
         add(layout);
     }
 
-    private void showWaitingReceipt() {
-        receiptContainer.removeAll();
-        Div placeholder = new Div();
-        placeholder.addClassName("ticket-receipt-card");
-        placeholder.getStyle().set("text-align", "center");
-        placeholder.getStyle().set("padding", "3rem 1.5rem");
+    private void showEmptyInvoiceState() {
+        invoiceContainer.removeAll();
 
-        Span icon = new Span("🎫");
+        Div panel = new Div();
+        panel.addClassName("sap-panel");
+        panel.getStyle().set("text-align", "center");
+        panel.getStyle().set("padding", "4rem 2rem");
+
+        Span icon = new Span("📄");
         icon.getStyle().set("font-size", "3.5rem");
 
-        H2 prompt = new H2("Esperando Lectura de Ticket");
-        prompt.getStyle().set("color", "var(--text-muted)");
-        prompt.getStyle().set("font-size", "1.25rem");
-        prompt.getStyle().set("margin-top", "1rem");
+        H3 title = new H3("Sin Ticket Seleccionado");
+        title.getStyle().set("color", "var(--sap-text-muted)");
+        title.getStyle().set("margin", "1rem 0 0.5rem 0");
 
-        Paragraph desc = new Paragraph("Alinee el código QR en el lector o ingrese el código para ver el desglose y proceder al cobro.");
-        desc.getStyle().set("color", "var(--text-subtle)");
+        Paragraph desc = new Paragraph("Enfoque un código QR en el lector óptico o digite el código manual para visualizar los detalles de cobro.");
+        desc.getStyle().set("color", "var(--sap-text-secondary)");
         desc.getStyle().set("font-size", "0.9rem");
 
-        placeholder.add(icon, prompt, desc);
-        receiptContainer.add(placeholder);
+        panel.add(icon, title, desc);
+        invoiceContainer.add(panel);
     }
 
-    private void handleQrScanned(String scannedCode) {
+    private void handleQrScanned(String code) {
         getUI().ifPresent(ui -> ui.access(() -> {
-            Optional<TicketModel> optTicket = parkingService.findTicket(scannedCode);
-            if (optTicket.isEmpty()) {
-                Notification n = Notification.show("❌ Ticket no encontrado: " + scannedCode, 3000, Notification.Position.TOP_CENTER);
+            Optional<TicketModel> opt = parkingService.findTicket(code);
+            if (opt.isEmpty()) {
+                Notification n = Notification.show("Ticket no encontrado en el sistema: " + code, 3000, Notification.Position.TOP_CENTER);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                showWaitingReceipt();
+                showEmptyInvoiceState();
                 return;
             }
 
-            this.currentTicket = optTicket.get();
+            this.currentTicket = opt.get();
             manualCodeField.setValue(currentTicket.getUuid());
-            renderTicketReceipt(this.currentTicket);
-            Notification.show("Ticket detectado: " + currentTicket.getUuid(), 2000, Notification.Position.BOTTOM_END);
+            renderInvoice(currentTicket);
         }));
     }
 
-    private void renderTicketReceipt(TicketModel ticket) {
-        receiptContainer.removeAll();
+    private void renderInvoice(TicketModel ticket) {
+        invoiceContainer.removeAll();
 
-        Div card = new Div();
-        card.addClassName("ticket-receipt-card");
+        Div invoicePanel = new Div();
+        invoicePanel.addClassName("sap-invoice-panel");
 
-        // Encabezado
+        // Cabecera del comprobante
         Div header = new Div();
-        header.addClassName("receipt-header");
+        header.addClassName("sap-panel-header");
 
-        H2 receiptTitle = new H2("Recibo de Estacionamiento");
-        receiptTitle.getStyle().set("margin", "0");
-        receiptTitle.getStyle().set("font-size", "1.4rem");
+        H3 invoiceTitle = new H3("Comprobante de Estacionamiento");
+        invoiceTitle.addClassName("sap-panel-title");
 
         Span statusBadge = new Span();
-        statusBadge.addClassName("status-pill");
+        statusBadge.addClassName("sap-badge");
         if (ticket.isPayed()) {
             statusBadge.addClassName("success");
-            statusBadge.setText("✅ PAGADO");
+            statusBadge.setText("PAGADO");
         } else {
             statusBadge.addClassName("warning");
-            statusBadge.setText("⏳ PENDIENTE DE PAGO");
+            statusBadge.setText("PENDIENTE DE PAGO");
         }
 
-        HorizontalLayout headerRow = new HorizontalLayout(receiptTitle, statusBadge);
-        headerRow.setWidthFull();
-        headerRow.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        headerRow.setAlignItems(FlexComponent.Alignment.CENTER);
-        header.add(headerRow);
+        header.add(invoiceTitle, statusBadge);
 
-        // Desglose
-        Div body = new Div();
+        // Tabla de datos estructurada estilo ERP
+        Div tableContainer = new Div();
+        tableContainer.getElement().setProperty("innerHTML", buildInvoiceTableHtml(ticket));
 
-        body.add(createReceiptRow("Código Ticket:", ticket.getUuid()));
-
+        // Total a pagar
         Instant entry = ticket.getEntryTime() != null ? ticket.getEntryTime() : Instant.now();
-        body.add(createReceiptRow("Hora de Entrada:", formatter.format(entry)));
-
-        Instant now = Instant.now();
-        long minutes = Math.max(1, Duration.between(entry, now).toMinutes());
-        long hours = minutes / 60;
-        long remMinutes = minutes % 60;
-        String elapsedStr = (hours > 0 ? hours + " h " : "") + remMinutes + " min";
-        body.add(createReceiptRow("Tiempo Transcurrido:", elapsedStr));
-
-        // Tarifa
+        long minutes = Math.max(1, Duration.between(entry, Instant.now()).toMinutes());
         long billableHours = (long) Math.ceil(minutes / 60.0);
         float calculatedAmount = ticket.getAmount() > 0 ? ticket.getAmount() : (10.0f + Math.max(0, billableHours - 1) * 5.0f);
 
-        body.add(createReceiptRow("Tarifa Aplicada:", "Q10.00 base + Q5.00/h"));
+        Div totalBox = new Div();
+        totalBox.addClassName("sap-invoice-total-box");
 
-        if (ticket.isPayed() && ticket.getPaymentTime() != null) {
-            body.add(createReceiptRow("Fecha de Pago:", formatter.format(ticket.getPaymentTime())));
-        }
+        VerticalLayout totalLabels = new VerticalLayout();
+        totalLabels.setPadding(false);
+        totalLabels.setSpacing(false);
 
-        // Total
-        Div totalRow = new Div();
-        totalRow.addClassName("receipt-row");
-        totalRow.addClassName("receipt-total");
+        Span totalTitle = new Span("TOTAL A CANCELAR:");
+        totalTitle.getStyle().set("font-weight", "700");
+        totalTitle.getStyle().set("color", "var(--sap-text)");
+        totalTitle.getStyle().set("font-size", "0.95rem");
 
-        Span totalLabel = new Span("TOTAL A PAGAR:");
-        totalLabel.getStyle().set("font-size", "1.1rem");
-        totalLabel.getStyle().set("font-weight", "700");
+        Span totalSubtext = new Span("Impuestos y estadía incluidos");
+        totalSubtext.getStyle().set("font-size", "0.8rem");
+        totalSubtext.getStyle().set("color", "var(--sap-text-secondary)");
+
+        totalLabels.add(totalTitle, totalSubtext);
 
         Span totalAmount = new Span(String.format("Q%.2f", calculatedAmount));
-        totalAmount.addClassName("amount-highlight");
+        totalAmount.addClassName("sap-invoice-total-amount");
 
-        totalRow.add(totalLabel, totalAmount);
-        body.add(totalRow);
+        totalBox.add(totalLabels, totalAmount);
 
-        // Acciones
+        // Botones de acción inferiores
         HorizontalLayout actions = new HorizontalLayout();
         actions.setWidthFull();
         actions.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        actions.setSpacing(true);
         actions.getStyle().set("margin-top", "1.5rem");
 
         if (!ticket.isPayed()) {
-            Button payBtn = new Button("Pagar Ticket (" + String.format("Q%.2f", calculatedAmount) + ")", VaadinIcon.CREDIT_CARD.create(), e -> {
+            Button payBtn = new Button("Procesar Pago (" + String.format("Q%.2f", calculatedAmount) + ")", VaadinIcon.CHECK.create(), e -> {
                 try {
                     TicketModel paid = parkingService.payTicket(ticket.getUuid());
                     this.currentTicket = paid;
-                    renderTicketReceipt(paid);
+                    renderInvoice(paid);
 
-                    Notification n = Notification.show("✅ ¡Pago procesado con éxito! Ticket marcado como pagado.", 4000, Notification.Position.TOP_CENTER);
+                    Notification n = Notification.show("Cobro registrado satisfactoriamente. Ticket marcado como PAGADO.", 4000, Notification.Position.TOP_CENTER);
                     n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 } catch (Exception ex) {
-                    Notification n = Notification.show("Error al procesar pago: " + ex.getMessage(), 4000, Notification.Position.TOP_CENTER);
+                    Notification n = Notification.show("Error al registrar pago: " + ex.getMessage(), 3500, Notification.Position.TOP_CENTER);
                     n.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
             });
-            payBtn.addClassName("btn-success-glow");
+            payBtn.addClassName("sap-btn-success");
             actions.add(payBtn);
         } else {
-            Button alreadyPaidBtn = new Button("Ticket Ya Pagado", VaadinIcon.CHECK_CIRCLE.create());
-            alreadyPaidBtn.setEnabled(false);
-            alreadyPaidBtn.addClassName("status-pill");
-            alreadyPaidBtn.addClassName("success");
-
-            Button clearBtn = new Button("Escanear Otro Ticket", VaadinIcon.ARROW_RIGHT.create(), e -> showWaitingReceipt());
-            clearBtn.addClassName("btn-primary-glow");
-
-            actions.add(alreadyPaidBtn, clearBtn);
+            Button clearBtn = new Button("Atender Siguiente Ticket", VaadinIcon.ARROW_RIGHT.create(), e -> showEmptyInvoiceState());
+            clearBtn.addClassName("sap-btn-primary");
+            actions.add(clearBtn);
         }
 
-        card.add(header, body, actions);
-        receiptContainer.add(card);
+        invoicePanel.add(header, tableContainer, totalBox, actions);
+        invoiceContainer.add(invoicePanel);
     }
 
-    private Div createReceiptRow(String label, String value) {
-        Div row = new Div();
-        row.addClassName("receipt-row");
+    private String buildInvoiceTableHtml(TicketModel ticket) {
+        Instant entry = ticket.getEntryTime() != null ? ticket.getEntryTime() : Instant.now();
+        long minutes = Math.max(1, Duration.between(entry, Instant.now()).toMinutes());
+        long hours = minutes / 60;
+        long remMinutes = minutes % 60;
+        String elapsedStr = (hours > 0 ? hours + " h " : "") + remMinutes + " min";
 
-        Span labelSpan = new Span(label);
-        labelSpan.addClassName("receipt-label");
+        String paymentTimeStr = (ticket.isPayed() && ticket.getPaymentTime() != null)
+                ? formatter.format(ticket.getPaymentTime())
+                : "Pendiente";
 
-        Span valueSpan = new Span(value);
-        valueSpan.addClassName("receipt-value");
-
-        row.add(labelSpan, valueSpan);
-        return row;
+        return "<table class='sap-invoice-table'>" +
+                "<tr><td class='label-cell'>Código de Identificación:</td><td class='value-cell'>" + ticket.getUuid() + "</td></tr>" +
+                "<tr><td class='label-cell'>Fecha y Hora de Ingreso:</td><td class='value-cell'>" + formatter.format(entry) + "</td></tr>" +
+                "<tr><td class='label-cell'>Tiempo Transcurrido:</td><td class='value-cell'>" + elapsedStr + "</td></tr>" +
+                "<tr><td class='label-cell'>Régimen Tarifario:</td><td class='value-cell'>Tarifa Base Q10.00 + Q5.00/h</td></tr>" +
+                "<tr><td class='label-cell'>Fecha / Hora de Liquidación:</td><td class='value-cell'>" + paymentTimeStr + "</td></tr>" +
+                "</table>";
     }
 }
