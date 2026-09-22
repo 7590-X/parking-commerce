@@ -1,18 +1,27 @@
 package com.parking.webapp.service;
 
-import java.time.Duration;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import com.parking.webapp.broker.ArduinoKernelProducer;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.parking.webapp.domain.exception.ParkingFullException;
+import com.parking.webapp.domain.exception.ParkingNotFoundException;
+import com.parking.webapp.domain.exception.TicketNotFoundException;
+import com.parking.webapp.domain.tariff.TariffStrategy;
 import com.parking.webapp.dto.ExitResult;
 import com.parking.webapp.dto.ParkingDto;
 import com.parking.webapp.dto.TelemetryDto;
 import com.parking.webapp.enums.EntryRequestKernel;
 import com.parking.webapp.enums.EntryResponseKernel;
+import com.parking.webapp.events.TicketCreatedEvent;
 import com.parking.webapp.model.ParkingModel;
 import com.parking.webapp.model.TicketModel;
+import com.parking.webapp.ports.output.HardwareBarrierPort;
 import com.parking.webapp.repository.ParkingRepository;
 import com.parking.webapp.repository.TicketRepository;
 
@@ -20,155 +29,108 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Implementación de los servicios de gestión del parqueo {@link ParkingBrokerService} y {@link ParkingWebService}.
- * Coordina la persistencia de datos (tickets y ocupación) junto con la comunicación asíncrona
- * hacia el hardware controlador (Arduino) mediante RabbitMQ.
+ * Implementación desacoplada y transaccional de los servicios de gestión de parqueo.
+ * Aplica principios SOLID:
+ * - SRP: Delega el cálculo de tarifas a {@link TariffStrategy} y el hardware a {@link HardwareBarrierPort}.
+ * - OCP: Nuevas tarifas o transportes de hardware se integran sin alterar esta clase.
+ * - DIP: Depende de interfaces y puertos, no de implementaciones concretas.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebService {
 
-    // Repositories
-    private final ParkingRepository parkingRepository;
-    private final TicketRepository ticketRepository;
-
-    // Broker Producers
-    private final ArduinoKernelProducer producer;
-
-    // Broker Routing Keys
+    private static final int DEFAULT_PARKING_ID = 1;
     private static final String RK_RESPONSE_IN = "kernel.arduino.response.in";
     private static final String RK_RESPONSE_OUT = "kernel.arduino.response.out";
 
+    // Repositorios de persistencia
+    private final ParkingRepository parkingRepository;
+    private final TicketRepository ticketRepository;
+
+    // Puertos y estrategias desacopladas
+    private final HardwareBarrierPort hardwarePort;
+    private final TariffStrategy tariffStrategy;
+    private final ApplicationEventPublisher eventPublisher;
+
     /**
-     * Verifica la disponibilidad de espacio ante una solicitud recibida desde el broker.
-     * Si el espacio es suficiente, genera un ticket e instruye al controlador permitir el paso (ALLOW);
-     * de lo contrario, envía una respuesta de denegación (DENY).
-     *
-     * @param payload Comando recibido desde el broker (se espera {@link EntryRequestKernel#CHECK_SPACE}).
+     * Procesa la solicitud de entrada emitida por el microcontrolador.
+     * Reserva el espacio de forma atómica en base de datos para prevenir condiciones de carrera.
      */
     @Override
+    @Transactional
     public void verifyParkingSpace(String payload) {
         if (!payload.equals(EntryRequestKernel.CHECK_SPACE.name())) {
-            log.warn("Payload [{}] no válido para el proceso de chequeo de parqueo", payload);
+            log.warn("Payload [{}] no válido para chequeo de espacio", payload);
             return;
         }
-        boolean isValid = validateParkingSpace();
-        if (isValid) {
-            generateTicket();
-            producer.sendMQResponse(RK_RESPONSE_IN, EntryResponseKernel.ALLOW.name());
+
+        boolean spaceReserved = parkingRepository.incrementCapacityIfAvailable(DEFAULT_PARKING_ID, Instant.now()) > 0;
+        if (spaceReserved) {
+            TicketModel ticket = generateTicket();
+            hardwarePort.sendMQResponse(RK_RESPONSE_IN, EntryResponseKernel.ALLOW.name());
+            log.info("Acceso autorizado. Espacio reservado y ticket emitido: {}", ticket.getUuid());
         } else {
-            producer.sendMQResponse(RK_RESPONSE_IN, EntryResponseKernel.DENY.name());
+            hardwarePort.sendMQResponse(RK_RESPONSE_IN, EntryResponseKernel.DENY.name());
+            log.warn("Acceso denegado: Parqueo sin disponibilidad de aforo.");
         }
     }
 
     /**
-     * Comprueba si el parqueo cuenta con espacios disponibles respecto a su capacidad máxima.
-     * Si hay disponibilidad, incrementa en uno la capacidad actual y persiste los cambios en la base de datos.
-     *
-     * @return {@code true} si se reservó exitosamente un espacio; {@code false} si el parqueo está lleno o no existe.
-     */
-    private boolean validateParkingSpace() {
-        ParkingModel parking = parkingRepository.findById(1).orElse(null);
-        if (null == parking) {
-            log.error("No se encontró un parqueo asociado");
-            return false;
-        }
-        short current = parking.getCurrentCapacity();
-        short max = parking.getMaxCapacity();
-        if (current < max) {
-            parking.setCurrentCapacity((short) (current + 1));
-            parking.setLastUpdated(Instant.now());
-            parkingRepository.saveAndFlush(parking);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Genera y persiste un nuevo ticket de estacionamiento con un identificador único (UUID),
-     * fecha/hora de entrada actual y estado inicial no pagado.
-     * Emite además el evento para visualización e impresión en el frontend.
+     * Genera un nuevo ticket de estacionamiento, lo persiste y emite el evento de dominio.
      */
     private TicketModel generateTicket() {
-        ParkingModel parking = parkingRepository.findById(1).orElse(null);
-        if (null == parking) {
-            log.error("No se encontró un parqueo para la generación de ticket");
-            return null;
-        }
+        ParkingModel parking = parkingRepository.findById(DEFAULT_PARKING_ID)
+                .orElseThrow(() -> new ParkingNotFoundException(DEFAULT_PARKING_ID));
+
         TicketModel ticket = TicketModel.builder()
                 .uuid(UUID.randomUUID().toString())
                 .entryTime(Instant.now())
-                .isPayed(false)
+                .isPaid(false)
                 .parking(parking)
                 .build();
 
         TicketModel persisted = ticketRepository.saveAndFlush(ticket);
-        log.info("Ticket generado: {}", persisted.getUuid());
+        log.info("Ticket persistido: {}", persisted.getUuid());
 
-        // Notificar al frontend para mostrar diálogo de impresión
+        // Emitir evento de dominio Spring
+        eventPublisher.publishEvent(new TicketCreatedEvent(this, persisted));
+        // Notificar también vía puente legacy para compatibilidad
         TicketBroadcaster.broadcast(persisted);
 
         return persisted;
     }
 
-    /**
-     * Registra en el log la recepción de una solicitud de validación de código QR desde el broker.
-     *
-     * @param payload Comando recibido (se espera {@link EntryRequestKernel#CHECK_QR}).
-     */
     @Override
     public void checkOutQR(String payload) {
         if (payload.equals(EntryRequestKernel.CHECK_QR.name())) {
             log.info("Chequeo de QR recibido desde broker");
         } else {
-            log.warn("Payload [{}] no válido para el proceso de chequeo de ticket", payload);
+            log.warn("Payload [{}] no válido para chequeo de ticket: {}", payload, payload);
         }
     }
 
-    /**
-     * Consulta la telemetría actual del parqueo (capacidad máxima, capacidad ocupada y marca de tiempo).
-     *
-     * @return DTO {@link TelemetryDto} con los valores actuales.
-     * @throws RuntimeException Si no se encuentra el registro del parqueo principal en la base de datos.
-     */
     @Override
     public TelemetryDto obtainTelemetry() {
-        ParkingModel parking = parkingRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("No se encontró parqueo para lectura de telemetría"));
+        ParkingModel parking = parkingRepository.findById(DEFAULT_PARKING_ID)
+                .orElseThrow(() -> new ParkingNotFoundException(DEFAULT_PARKING_ID));
 
         return new TelemetryDto(parking.getMaxCapacity(), parking.getCurrentCapacity(), parking.getLastUpdated());
     }
 
-    /**
-     * Consulta y mapea los datos descriptivos del parqueo (ID, nombre y dirección).
-     *
-     * @return DTO {@link ParkingDto} con la información del parqueo.
-     * @throws RuntimeException Si no se encuentra el registro del parqueo principal en la base de datos.
-     */
     @Override
     public ParkingDto obtainParking() {
-        ParkingModel parking = parkingRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("No se encontró parqueo para obtener sus datos"));
+        ParkingModel parking = parkingRepository.findById(DEFAULT_PARKING_ID)
+                .orElseThrow(() -> new ParkingNotFoundException(DEFAULT_PARKING_ID));
+
         return new ParkingDto(parking.getId(), parking.getName(), parking.getAddress());
     }
 
-    /**
-     * Recupera la entidad completa del parqueo principal.
-     *
-     * @return Objeto {@link ParkingModel} con la información del parqueo, o {@code null} si no existe.
-     */
     @Override
     public ParkingModel getParkingInfo() {
-        return parkingRepository.findById(1).orElse(null);
+        return parkingRepository.findById(DEFAULT_PARKING_ID).orElse(null);
     }
 
-    /**
-     * Busca un ticket por su identificador UUID en la base de datos.
-     *
-     * @param uuid Cadena con el identificador único del ticket.
-     * @return Un {@link Optional} con el {@link TicketModel} si existe, o vacío si el UUID es nulo, en blanco o no existe.
-     */
     @Override
     public Optional<TicketModel> findTicket(String uuid) {
         if (uuid == null || uuid.isBlank()) {
@@ -177,46 +139,39 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
         return ticketRepository.findByUuid(uuid.trim());
     }
 
-    /**
-     * Realiza el cobro de un ticket registrando su estado pagado, fecha/hora de pago
-     * y calculando la tarifa según el tiempo transcurrido (Tarifa base Q10.00 + Q5.00 por hora extra).
-     *
-     * @param uuid Identificador único del ticket a procesar.
-     * @return {@link TicketModel} actualizado con el pago registrado.
-     * @throws IllegalArgumentException Si el ticket no es encontrado con el código provisto.
-     */
     @Override
+    public BigDecimal calculateCurrentFee(TicketModel ticket) {
+        if (ticket == null) {
+            return BigDecimal.ZERO;
+        }
+        if (ticket.isPaid() && ticket.getAmount() != null && ticket.getAmount().compareTo(BigDecimal.ZERO) > 0) {
+            return ticket.getAmount();
+        }
+        Instant entryTime = ticket.getEntryTime() != null ? ticket.getEntryTime() : Instant.now();
+        return tariffStrategy.calculateFee(entryTime, Instant.now());
+    }
+
+    @Override
+    @Transactional
     public TicketModel payTicket(String uuid) {
         TicketModel ticket = ticketRepository.findByUuid(uuid.trim())
-                .orElseThrow(() -> new IllegalArgumentException("Ticket no encontrado con código: " + uuid));
+                .orElseThrow(() -> new TicketNotFoundException(uuid));
 
-        if (!ticket.isPayed()) {
-            ticket.setPayed(true);
+        if (!ticket.isPaid()) {
+            BigDecimal fee = tariffStrategy.calculateFee(ticket.getEntryTime(), Instant.now());
+
+            ticket.setPaid(true);
             ticket.setPaymentTime(Instant.now());
+            ticket.setAmount(fee);
 
-            // Cálculo de tarifa: Base Q10.00 + Q5.00 por hora transcurrida adicional
-            Instant entry = ticket.getEntryTime() != null ? ticket.getEntryTime() : Instant.now();
-            long minutes = Math.max(1, Duration.between(entry, Instant.now()).toMinutes());
-            long hours = (long) Math.ceil(minutes / 60.0);
-            float calculatedAmount = 10.0f + Math.max(0, hours - 1) * 5.0f;
-
-            ticket.setAmount(calculatedAmount);
             ticket = ticketRepository.saveAndFlush(ticket);
-            log.info("Ticket {} pagado exitosamente con monto Q{}", ticket.getUuid(), calculatedAmount);
+            log.info("Ticket {} pagado exitosamente. Monto cobrado: Q{}", ticket.getUuid(), fee);
         }
         return ticket;
     }
 
-    /**
-     * Procesa la solicitud de salida de un vehículo mediante su ticket:
-     * valida existencia, estado de pago y que no haya salido con anterioridad.
-     * Si es autorizado, registra la salida, decrementa la ocupación del parqueo y
-     * envía la orden de apertura de barrera al microcontrolador a través del broker.
-     *
-     * @param uuid Identificador único del ticket que solicita la salida.
-     * @return {@link ExitResult} indicando si la salida fue autorizada o la causa del rechazo.
-     */
     @Override
+    @Transactional
     public ExitResult processExit(String uuid) {
         Optional<TicketModel> optTicket = findTicket(uuid);
         if (optTicket.isEmpty()) {
@@ -227,69 +182,39 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
         TicketModel ticket = optTicket.get();
 
         if (ticket.getOutTime() != null) {
-            log.warn("Ticket {} ya registró su salida previamente", uuid);
+            log.warn("Ticket {} ya registró salida previamente", uuid);
             return ExitResult.error("Este ticket ya registró su salida del parqueo anteriormente.");
         }
 
-        if (!ticket.isPayed()) {
+        if (!ticket.isPaid()) {
             log.warn("Ticket {} no ha sido pagado. Denegando salida.", uuid);
-            producer.sendMQResponse(RK_RESPONSE_OUT, EntryResponseKernel.DENY.name());
+            hardwarePort.sendMQResponse(RK_RESPONSE_OUT, EntryResponseKernel.DENY.name());
             return ExitResult.error("Ticket PENDIENTE DE PAGO. Debe pagarse antes de salir.");
         }
 
-        // Salida Autorizada
+        // Registrar salida
         ticket.setOutTime(Instant.now());
         ticketRepository.saveAndFlush(ticket);
 
-        // Disminuir ocupación del parqueo
-        ParkingModel parking = parkingRepository.findById(1).orElse(null);
-        if (parking != null) {
-            short current = parking.getCurrentCapacity();
-            if (current > 0) {
-                parking.setCurrentCapacity((short) (current - 1));
-            }
-            parking.setLastUpdated(Instant.now());
-            parkingRepository.saveAndFlush(parking);
-        }
+        // Decrementar ocupación atómicamente
+        parkingRepository.decrementCapacity(DEFAULT_PARKING_ID, Instant.now());
 
-        // Enviar orden de apertura de barrera
-        producer.sendBarrierCommand("OPEN");
-        producer.sendMQResponse(RK_RESPONSE_OUT, EntryResponseKernel.ALLOW.name());
-        log.info("Salida autorizada para ticket {}. Barrera aperturada.", uuid);
+        // Apertura física de la talanquera
+        hardwarePort.sendBarrierCommand("OPEN");
+        hardwarePort.sendMQResponse(RK_RESPONSE_OUT, EntryResponseKernel.ALLOW.name());
+        log.info("Salida autorizada para ticket {}. Talanquera aperturada.", uuid);
 
         return ExitResult.ok("¡Salida Autorizada! Talanquera abierta. Buen viaje.", ticket);
     }
 
-    /**
-     * Crea un ticket de forma manual (por ejemplo, desde la interfaz administrativa web),
-     * actualiza la ocupación del parqueo y persiste el nuevo ticket.
-     *
-     * @return {@link TicketModel} recién generado y persistido.
-     * @throws IllegalStateException Si no existe el registro del parqueo principal.
-     */
     @Override
+    @Transactional
     public TicketModel createManualTicket() {
-        ParkingModel parking = parkingRepository.findById(1).orElse(null);
-        if (parking == null) {
-            throw new IllegalStateException("No existe parqueo ID 1 configurado");
+        boolean spaceReserved = parkingRepository.incrementCapacityIfAvailable(DEFAULT_PARKING_ID, Instant.now()) > 0;
+        if (!spaceReserved) {
+            throw new ParkingFullException(DEFAULT_PARKING_ID);
         }
-        boolean hasSpace = validateParkingSpace();
-        if (!hasSpace) {
-            throw new IllegalStateException("El parqueo ha alcanzado su capacidad máxima");
-        }
-        TicketModel ticket = TicketModel.builder()
-                .uuid(UUID.randomUUID().toString())
-                .entryTime(Instant.now())
-                .isPayed(false)
-                .parking(parking)
-                .build();
 
-        TicketModel persisted = ticketRepository.saveAndFlush(ticket);
-        log.info("Ticket manual generado: {}", persisted.getUuid());
-
-        // Notificar al frontend para mostrar diálogo de impresión
-        TicketBroadcaster.broadcast(persisted);
-
-        return persisted;
+        return generateTicket();
     }
 }

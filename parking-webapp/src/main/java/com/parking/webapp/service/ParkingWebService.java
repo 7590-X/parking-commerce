@@ -64,6 +64,14 @@ public interface ParkingWebService {
     ExitResult processExit(String uuid);
 
     /**
+     * Calcula la tarifa devengada actual para un ticket según el esquema tarifario activo.
+     *
+     * @param ticket Ticket a liquidar.
+     * @return Importe en {@link java.math.BigDecimal}.
+     */
+    java.math.BigDecimal calculateCurrentFee(TicketModel ticket);
+
+    /**
      * Crea y registra manualmente un nuevo ticket de estacionamiento con un UUID generado,
      * asignando la hora de entrada actual y actualizando el espacio ocupado si hay disponibilidad.
      *

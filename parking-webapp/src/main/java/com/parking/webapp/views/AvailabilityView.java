@@ -4,10 +4,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import com.parking.webapp.dto.TelemetryDto;
+import com.parking.webapp.events.TicketUiBroadcaster;
 import com.parking.webapp.model.ParkingModel;
 import com.parking.webapp.service.ParkingWebService;
-import com.parking.webapp.service.TicketBroadcaster;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -34,6 +33,7 @@ import com.vaadin.flow.shared.Registration;
 public class AvailabilityView extends VerticalLayout {
 
     private final ParkingWebService parkingService;
+    private final TicketUiBroadcaster ticketUiBroadcaster;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
             .withZone(ZoneId.systemDefault());
 
@@ -50,8 +50,9 @@ public class AvailabilityView extends VerticalLayout {
     private Registration pollRegistration;
     private Registration ticketPollRegistration;
 
-    public AvailabilityView(ParkingWebService parkingService) {
+    public AvailabilityView(ParkingWebService parkingService, TicketUiBroadcaster ticketUiBroadcaster) {
         this.parkingService = parkingService;
+        this.ticketUiBroadcaster = ticketUiBroadcaster;
 
         setSizeFull();
         setPadding(true);
@@ -224,15 +225,16 @@ public class AvailabilityView extends VerticalLayout {
     private void refreshData() {
         try {
             ParkingModel parking = parkingService.getParkingInfo();
-            if (parking != null) {
-                parkingNameTitle.setText(parking.getName() != null ? parking.getName() : "Estacionamiento Central");
-                parkingAddressText
-                        .setText(parking.getAddress() != null ? parking.getAddress() : "Campus Universitario");
+            if (parking == null) {
+                lastUpdatedSpan.setText("Sin registro de parqueo.");
+                return;
             }
 
-            TelemetryDto telemetry = parkingService.obtainTelemetry();
-            short max = telemetry.max();
-            short current = telemetry.current();
+            parkingNameTitle.setText(parking.getName() != null ? parking.getName() : "Estacionamiento Central");
+            parkingAddressText.setText(parking.getAddress() != null ? parking.getAddress() : "Campus Universitario");
+
+            short max = parking.getMaxCapacity();
+            short current = parking.getCurrentCapacity();
             short available = (short) Math.max(0, max - current);
 
             maxCapacitySpan.setText(String.valueOf(max));
@@ -261,7 +263,7 @@ public class AvailabilityView extends VerticalLayout {
                 progressBarFill.getStyle().set("background-color", "var(--sap-success)");
             }
 
-            Instant lastUpdated = telemetry.lastUpdated();
+            Instant lastUpdated = parking.getLastUpdated();
             if (lastUpdated != null) {
                 lastUpdatedSpan.setText(formatter.format(lastUpdated));
             } else {
@@ -278,7 +280,7 @@ public class AvailabilityView extends VerticalLayout {
         UI ui = attachEvent.getUI();
         ui.setPollInterval(3000);
         pollRegistration = ui.addPollListener(event -> refreshData());
-        ticketPollRegistration = TicketBroadcaster.register(ticket -> {
+        ticketPollRegistration = ticketUiBroadcaster.register(ticket -> {
             ui.access(this::refreshData);
         });
     }

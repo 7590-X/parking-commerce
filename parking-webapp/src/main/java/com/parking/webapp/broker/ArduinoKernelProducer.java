@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import com.parking.webapp.conf.RabbitMQConfig;
+import com.parking.webapp.ports.output.HardwareBarrierPort;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ArduinoKernelProducer {
+public class ArduinoKernelProducer implements HardwareBarrierPort {
 
     private final RabbitTemplate template;
 

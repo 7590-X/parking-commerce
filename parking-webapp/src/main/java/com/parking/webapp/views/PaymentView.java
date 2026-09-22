@@ -245,11 +245,8 @@ public class PaymentView extends VerticalLayout {
         Div tableContainer = new Div();
         tableContainer.getElement().setProperty("innerHTML", buildInvoiceTableHtml(ticket));
 
-        // Total a pagar
-        Instant entry = ticket.getEntryTime() != null ? ticket.getEntryTime() : Instant.now();
-        long minutes = Math.max(1, Duration.between(entry, Instant.now()).toMinutes());
-        long billableHours = (long) Math.ceil(minutes / 60.0);
-        float calculatedAmount = ticket.getAmount() > 0 ? ticket.getAmount() : (10.0f + Math.max(0, billableHours - 1) * 5.0f);
+        // Total a pagar obtenido de la estrategia de servicio
+        java.math.BigDecimal calculatedAmount = parkingService.calculateCurrentFee(ticket);
 
         Div totalBox = new Div();
         totalBox.addClassName("sap-invoice-total-box");

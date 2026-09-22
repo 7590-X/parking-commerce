@@ -1,8 +1,8 @@
 package com.parking.webapp.views;
 
+import com.parking.webapp.events.TicketUiBroadcaster;
 import com.parking.webapp.model.ParkingModel;
 import com.parking.webapp.service.ParkingWebService;
-import com.parking.webapp.service.TicketBroadcaster;
 import com.parking.webapp.views.components.TicketPrintDialog;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -18,10 +18,12 @@ import com.vaadin.flow.shared.Registration;
 public class MainLayout extends AppLayout {
 
     private final ParkingWebService parkingService;
+    private final TicketUiBroadcaster ticketUiBroadcaster;
     private Registration ticketBroadcastRegistration;
 
-    public MainLayout(ParkingWebService parkingService) {
+    public MainLayout(ParkingWebService parkingService, TicketUiBroadcaster ticketUiBroadcaster) {
         this.parkingService = parkingService;
+        this.ticketUiBroadcaster = ticketUiBroadcaster;
         createHeader();
     }
 
@@ -77,7 +79,7 @@ public class MainLayout extends AppLayout {
         UI ui = attachEvent.getUI();
         ui.getPage().addJavaScript("/ticket-printer.js");
 
-        ticketBroadcastRegistration = TicketBroadcaster.register(ticket -> {
+        ticketBroadcastRegistration = ticketUiBroadcaster.register(ticket -> {
             ui.access(() -> {
                 ParkingModel parking = (parkingService != null) ? parkingService.getParkingInfo() : null;
                 TicketPrintDialog.show(ticket, parking);

@@ -1,5 +1,6 @@
 package com.parking.webapp.model;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 import jakarta.persistence.Column;
@@ -45,10 +46,10 @@ public class TicketModel {
     private Instant paymentTime;
 
     @Column(name = "is_payed")
-    private boolean isPayed;
+    private boolean isPaid;
 
-    @Column(name = "amount", nullable = true)
-    private float amount;
+    @Column(name = "amount", precision = 10, scale = 2, nullable = true)
+    private BigDecimal amount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parking_id")
@@ -63,4 +64,26 @@ public class TicketModel {
             this.entryTime = Instant.now();
         }
     }
+
+    /**
+     * Alias de compatibilidad hacia atrás para isPaid.
+     */
+    public boolean isPayed() {
+        return this.isPaid;
+    }
+
+    /**
+     * Alias de compatibilidad hacia atrás para isPaid.
+     */
+    public void setPayed(boolean payed) {
+        this.isPaid = payed;
+    }
+
+    public static class TicketModelBuilder {
+        public TicketModelBuilder isPayed(boolean isPayed) {
+            this.isPaid = isPayed;
+            return this;
+        }
+    }
 }
+

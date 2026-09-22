@@ -45,4 +45,23 @@ class TicketPrintTest {
 
         reg.remove();
     }
+
+    @Test
+    void testTicketUiBroadcasterWithEvent() {
+        com.parking.webapp.events.TicketUiBroadcaster uiBroadcaster = new com.parking.webapp.events.TicketUiBroadcaster();
+        AtomicReference<TicketModel> received = new AtomicReference<>();
+        var reg = uiBroadcaster.register(received::set);
+
+        TicketModel ticket = TicketModel.builder()
+                .uuid("event-ticket-9876")
+                .isPaid(false)
+                .build();
+
+        uiBroadcaster.onTicketCreated(new com.parking.webapp.events.TicketCreatedEvent(this, ticket));
+
+        assertNotNull(received.get());
+        assertTrue("event-ticket-9876".equals(received.get().getUuid()));
+
+        reg.remove();
+    }
 }
