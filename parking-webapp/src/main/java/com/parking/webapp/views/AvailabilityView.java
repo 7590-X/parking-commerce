@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import com.parking.webapp.dto.TelemetryDto;
 import com.parking.webapp.model.ParkingModel;
 import com.parking.webapp.service.ParkingWebService;
+import com.parking.webapp.service.TicketBroadcaster;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -47,6 +48,7 @@ public class AvailabilityView extends VerticalLayout {
     private final Paragraph parkingAddressText = new Paragraph("Cargando ubicación...");
 
     private Registration pollRegistration;
+    private Registration ticketPollRegistration;
 
     public AvailabilityView(ParkingWebService parkingService) {
         this.parkingService = parkingService;
@@ -276,12 +278,18 @@ public class AvailabilityView extends VerticalLayout {
         UI ui = attachEvent.getUI();
         ui.setPollInterval(3000);
         pollRegistration = ui.addPollListener(event -> refreshData());
+        ticketPollRegistration = TicketBroadcaster.register(ticket -> {
+            ui.access(this::refreshData);
+        });
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
         if (pollRegistration != null) {
             pollRegistration.remove();
+        }
+        if (ticketPollRegistration != null) {
+            ticketPollRegistration.remove();
         }
         super.onDetach(detachEvent);
     }

@@ -88,12 +88,13 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
     /**
      * Genera y persiste un nuevo ticket de estacionamiento con un identificador único (UUID),
      * fecha/hora de entrada actual y estado inicial no pagado.
+     * Emite además el evento para visualización e impresión en el frontend.
      */
-    private void generateTicket() {
+    private TicketModel generateTicket() {
         ParkingModel parking = parkingRepository.findById(1).orElse(null);
         if (null == parking) {
             log.error("No se encontró un parqueo para la generación de ticket");
-            return;
+            return null;
         }
         TicketModel ticket = TicketModel.builder()
                 .uuid(UUID.randomUUID().toString())
@@ -102,8 +103,13 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
                 .parking(parking)
                 .build();
 
-        TicketModel persisted = ticketRepository.save(ticket);
+        TicketModel persisted = ticketRepository.saveAndFlush(ticket);
         log.info("Ticket generado: {}", persisted.getUuid());
+
+        // Notificar al frontend para mostrar diálogo de impresión
+        TicketBroadcaster.broadcast(persisted);
+
+        return persisted;
     }
 
     /**
@@ -267,6 +273,10 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
         if (parking == null) {
             throw new IllegalStateException("No existe parqueo ID 1 configurado");
         }
+        boolean hasSpace = validateParkingSpace();
+        if (!hasSpace) {
+            throw new IllegalStateException("El parqueo ha alcanzado su capacidad máxima");
+        }
         TicketModel ticket = TicketModel.builder()
                 .uuid(UUID.randomUUID().toString())
                 .entryTime(Instant.now())
@@ -274,7 +284,12 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
                 .parking(parking)
                 .build();
 
-        validateParkingSpace();
-        return ticketRepository.saveAndFlush(ticket);
+        TicketModel persisted = ticketRepository.saveAndFlush(ticket);
+        log.info("Ticket manual generado: {}", persisted.getUuid());
+
+        // Notificar al frontend para mostrar diálogo de impresión
+        TicketBroadcaster.broadcast(persisted);
+
+        return persisted;
     }
 }

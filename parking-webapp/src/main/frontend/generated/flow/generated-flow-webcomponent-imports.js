@@ -2,6 +2,9 @@ import { injectGlobalWebcomponentCss } from 'Frontend/generated/jar-resources/th
 
 import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
 import '@vaadin/app-layout/src/vaadin-app-layout.js';
+import '@vaadin/dialog/src/vaadin-dialog.js';
+import 'Frontend/generated/jar-resources/flow-component-renderer.js';
+import 'Frontend/generated/jar-resources/flow-component-directive.js';
 import '@vaadin/field-highlighter/src/vaadin-field-highlighter.js';
 import '@vaadin/common-frontend/ConnectionIndicator.js';
 import '@vaadin/accordion/src/vaadin-accordion.js';
@@ -17,8 +20,6 @@ import '@vaadin/card/src/vaadin-card.js';
 import '@vaadin/checkbox/src/vaadin-checkbox.js';
 import '@vaadin/checkbox-group/src/vaadin-checkbox-group.js';
 import '@vaadin/combo-box/src/vaadin-combo-box.js';
-import 'Frontend/generated/jar-resources/flow-component-renderer.js';
-import 'Frontend/generated/jar-resources/flow-component-directive.js';
 import 'Frontend/generated/jar-resources/comboBoxConnector.js';
 import '@vaadin/multi-select-combo-box/src/vaadin-multi-select-combo-box.js';
 import '@vaadin/confirm-dialog/src/vaadin-confirm-dialog.js';
@@ -33,7 +34,6 @@ import '@vaadin/date-time-picker/src/vaadin-date-time-picker.js';
 import '@vaadin/time-picker/src/vaadin-time-picker.js';
 import 'Frontend/generated/jar-resources/vaadin-time-picker/timepickerConnector.js';
 import 'Frontend/generated/jar-resources/vaadin-time-picker/helpers.js';
-import '@vaadin/dialog/src/vaadin-dialog.js';
 import 'Frontend/generated/jar-resources/dndConnector.js';
 import '@vaadin/form-layout/src/vaadin-form-layout.js';
 import '@vaadin/form-layout/src/vaadin-form-item.js';

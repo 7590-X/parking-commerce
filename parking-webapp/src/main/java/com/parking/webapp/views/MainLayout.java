@@ -1,15 +1,27 @@
 package com.parking.webapp.views;
 
+import com.parking.webapp.model.ParkingModel;
+import com.parking.webapp.service.ParkingWebService;
+import com.parking.webapp.service.TicketBroadcaster;
+import com.parking.webapp.views.components.TicketPrintDialog;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.shared.Registration;
 
 public class MainLayout extends AppLayout {
 
-    public MainLayout() {
+    private final ParkingWebService parkingService;
+    private Registration ticketBroadcastRegistration;
+
+    public MainLayout(ParkingWebService parkingService) {
+        this.parkingService = parkingService;
         createHeader();
     }
 
@@ -57,5 +69,27 @@ public class MainLayout extends AppLayout {
         header.setAlignItems(FlexComponent.Alignment.CENTER);
 
         addToNavbar(header);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        UI ui = attachEvent.getUI();
+        ui.getPage().addJavaScript("/ticket-printer.js");
+
+        ticketBroadcastRegistration = TicketBroadcaster.register(ticket -> {
+            ui.access(() -> {
+                ParkingModel parking = (parkingService != null) ? parkingService.getParkingInfo() : null;
+                TicketPrintDialog.show(ticket, parking);
+            });
+        });
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        if (ticketBroadcastRegistration != null) {
+            ticketBroadcastRegistration.remove();
+        }
+        super.onDetach(detachEvent);
     }
 }
