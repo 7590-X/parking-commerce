@@ -95,8 +95,6 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
 
         // Emitir evento de dominio Spring
         eventPublisher.publishEvent(new TicketCreatedEvent(this, persisted));
-        // Notificar también vía puente legacy para compatibilidad
-        TicketBroadcaster.broadcast(persisted);
 
         return persisted;
     }

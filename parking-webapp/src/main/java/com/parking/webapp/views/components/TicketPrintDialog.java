@@ -17,7 +17,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * Diálogo modal para la visualización e impresión de tickets de parqueo
@@ -111,9 +110,11 @@ public class TicketPrintDialog extends Dialog {
         // Pie de ticket
         Div footer = new Div();
         footer.addClassName("ticket-footer");
-        footer.setText("Conserve este ticket para realizar su pago en caja y habilitar la talanquera de salida. ¡Gracias por su visita!");
+        footer.setText(
+                "Conserve este ticket para realizar su pago en caja y habilitar la talanquera de salida. ¡Gracias por su visita!");
 
-        ticketContainer.add(title, subtitle, subheader, divider1, rowTicket, rowFecha, rowEstado, divider2, qrBox, pricingBox, divider3, footer);
+        ticketContainer.add(title, subtitle, subheader, divider1, rowTicket, rowFecha, rowEstado, divider2, qrBox,
+                pricingBox, divider3, footer);
 
         // Envoltura visual para centrar el ticket en el diálogo
         Div wrapper = new Div(ticketContainer);
@@ -142,7 +143,8 @@ public class TicketPrintDialog extends Dialog {
         Button printBtn = new Button("Imprimir Ticket", VaadinIcon.PRINT.create(), e -> {
             UI currentUI = UI.getCurrent();
             if (currentUI != null) {
-                currentUI.getPage().executeJs("if (window.printThermalTicket) { window.printThermalTicket(); } else { window.print(); }");
+                currentUI.getPage().executeJs(
+                        "if (window.printThermalTicket) { window.printThermalTicket(); } else { window.print(); }");
             }
         });
         printBtn.addClassName("sap-btn-primary");
@@ -161,7 +163,8 @@ public class TicketPrintDialog extends Dialog {
     }
 
     /**
-     * Método de conveniencia para abrir el diálogo con un ticket y modelo de parqueo.
+     * Método de conveniencia para abrir el diálogo con un ticket y modelo de
+     * parqueo.
      */
     public static void show(TicketModel ticket, ParkingModel parking) {
         TicketPrintDialog dialog = new TicketPrintDialog(ticket, parking);

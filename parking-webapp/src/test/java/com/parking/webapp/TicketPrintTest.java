@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import com.parking.webapp.model.TicketModel;
-import com.parking.webapp.service.TicketBroadcaster;
 import com.parking.webapp.util.QrCodeUtil;
 
 class TicketPrintTest {
@@ -21,29 +20,6 @@ class TicketPrintTest {
         assertNotNull(base64Qr);
         assertTrue(base64Qr.startsWith("data:image/png;base64,"));
         assertTrue(base64Qr.length() > 100);
-    }
-
-    @Test
-    void testTicketBroadcaster() {
-        AtomicReference<TicketModel> receivedTicket = new AtomicReference<>();
-        var reg = TicketBroadcaster.register(receivedTicket::set);
-
-        TicketModel ticket = TicketModel.builder()
-                .uuid("test-ticket-1234")
-                .isPayed(false)
-                .build();
-
-        TicketBroadcaster.broadcast(ticket);
-
-        try {
-            Thread.sleep(150);
-        } catch (InterruptedException ignored) {
-        }
-
-        assertNotNull(receivedTicket.get());
-        assertTrue("test-ticket-1234".equals(receivedTicket.get().getUuid()));
-
-        reg.remove();
     }
 
     @Test
