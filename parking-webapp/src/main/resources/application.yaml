@@ -14,7 +14,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        format_sql: false
+        "[format_sql]": false
 
 vaadin:
   launch-browser: true
@@ -22,5 +22,4 @@ vaadin:
 mqtt:
   broker: tcp://localhost:1883
   client-id: SpringBootBackend_Parking
-  topics: sensores/temperatura,sensores/presencia,parking/barrera
   qos: 1
