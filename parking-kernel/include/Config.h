@@ -34,11 +34,11 @@
 // [Arduino -> Broker] Canal de consulta de acceso.
 // Se emite cuando un auto se aproxima a la entrada para verificar si hay plazas libres.
 // Payload emitido: "CHECK_SPACE"
-#define TOPIC_ENTRY_REQUEST  "kernel/arduino/request"
+#define TOPIC_ENTRY_REQUEST  "kernel/arduino/request/in"
 
 // [Broker -> Arduino] Canal de respuesta con la decisión de acceso tomada por el backend/broker.
-// Payloads esperados: "ALLOW" (o "OPEN", "VLD") para abrir, "DENY" (o "FULL") para rechazar
-#define TOPIC_ENTRY_RESPONSE "kernel/arduino/response"
+// Payloads esperados: "ALLOW", "DENY"
+#define TOPIC_ENTRY_RESPONSE "kernel/arduino/response/in"
 
 // Mensajes y Comandos esperados
 #define PAYLOAD_CHECK_SPACE  "CHECK_SPACE"

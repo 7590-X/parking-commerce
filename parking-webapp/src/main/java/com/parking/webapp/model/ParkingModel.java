@@ -1,40 +1,37 @@
 package com.parking.webapp.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.Instant;
+
+import com.vaadin.copilot.shaded.classgraph.nonapi.json.Id;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "tbl_parking")
+@Table(name = "tb_parking")
 public class ParkingModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    public int id;
+    private int id;
 
-    @Column(name = "block", nullable = false)
-    private String block;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+    @Column(name = "address")
+    private String address;
 
-    @Column(name = "pin_in", nullable = false)
-    private int pinIn;
+    @Column(name = "max_capacity")
+    private short maxCapacity;
 
-    @Column(name = "pin_out", nullable = false)
-    private int pinOut;
+    @Column(name = "current_capacity")
+    private short currentCapacity;
 
-    @Column(name = "pin_led_green", nullable = false)
-    private int pinLedGreen;
-
-    @Column(name = "pin_led_red", nullable = false)
-    private int pinLedRed;
-
-    @Column(name = "device_id", nullable = false)
-    private String deviceId;
+    @Column(name = "last_updated")
+    private Instant lastUpdated;
 }

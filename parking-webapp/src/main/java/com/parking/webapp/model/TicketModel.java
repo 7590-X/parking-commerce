@@ -1,35 +1,55 @@
 package com.parking.webapp.model;
 
+import java.time.Instant;
+import com.vaadin.copilot.shaded.classgraph.nonapi.json.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "tbl_tickets")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "tb_tickets")
 public class TicketModel {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
     @Column(name = "uuid")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
 
-    @Column(name = "reference")
-    private String reference;
+    @Column(name = "entry_type")
+    private Instant entryTime;
 
-    @Column(name = "entrance_date", nullable = false)
-    private LocalDateTime entranceDate;
+    @Column(name = "out_time", nullable = true)
+    private Instant outTime;
 
-    @Column(name = "amount")
-    private Long amount;
+    @Column(name = "payment_type", nullable = true)
+    private Instant paymentTime;
 
-    @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    @Column(name = "is_payed")
+    private boolean isPayed;
 
-    @Column(name = "exit_date")
-    private LocalDateTime exitDate;
+    @Column(name = "amount", nullable = true)
+    private float amount;
 
-    @Column(name = "paid", nullable = false)
-    private Boolean paid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parking_id")
+    private ParkingModel parking;
 }

@@ -14,14 +14,14 @@ public class RabbitMQConfig {
     public static final String EXCHANGE_NAME = "amq.topic";
 
     // Cola exclusiva para el backend
-    public static final String BACKEND_QUEUE = "kernel.arduino.queue";
+    public static final String KERNEL_QUEUE = "kernel.arduino.queue";
 
     // Escuchar todos los mensajes que empiecen con kernel.arduino.#
     public static final String ROUTING_KEY_FROM_ARDUINO = "kernel.arduino.#";
 
     @Bean
     public Queue backendQueue() {
-        return new Queue(BACKEND_QUEUE, true);  // True = durable
+        return new Queue(KERNEL_QUEUE, true);  // True = durable
     }
 
     @Bean
