@@ -1,12 +1,24 @@
+/**
+ * @file main.cpp
+ * @brief Punto de entrada principal y scheduler cooperativo no bloqueante.
+ *
+ * Proyecto: Parking Kernel (Control de acceso vehicular para Arduino Uno y ESP8266).
+ * Inicializa actuadores, conectividad WiFi/MQTT y despacha periódicamente las tareas.
+ */
+
 #include <Arduino.h>
 #include <Config.h>
 #include <WifiLib.h>
 #include <BrokerLib.h>
 #include <ParkingKernel.h>
 
-ParkingKernel kernel;
+// Instancia central del orquestador de parqueo
+static ParkingKernel kernel;
 
-void onMQTTMessage(char *topic, byte *payload, unsigned int length)
+/**
+ * @brief Callback despachador de mensajes MQTT entrantes.
+ */
+static void onMQTTMessage(char *topic, byte *payload, unsigned int length)
 {
     char messageBuffer[16];
     unsigned int copyLen = (length < sizeof(messageBuffer) - 1) ? length : sizeof(messageBuffer) - 1;
@@ -31,25 +43,25 @@ void onMQTTMessage(char *topic, byte *payload, unsigned int length)
 void setup()
 {
     Serial.begin(9600);
-    while (!Serial && millis() < 2000) { ; } // Espera opcional en puertos nativos
+    while (!Serial && millis() < 2000) { ; }
 
     Serial.println(F("\n======================================"));
     Serial.println(F("   PARKING KERNEL - ARDUINO UNO       "));
     Serial.println(F("======================================"));
 
-    // Inicializar lógica y actuadores primero (seguridad de hardware)
+    // 1. Inicializar lógica interna, hardware y actuadores primero
     kernel.begin();
 
-    // Inicializar conectividad
+    // 2. Inicializar conectividad de red y mensajería IoT
     setupWiFi(WIFI_SSID, WIFI_PASS);
     setupMQTTClient(MQTT_BROKER_IP, onMQTTMessage);
 }
 
 void loop()
 {
-    uint32_t now = millis();
+    const uint32_t now = millis();
 
-    // Tareas cooperativas no bloqueantes
+    // Scheduler cooperativo no bloqueante
     updateWiFi(now, isMQTTConnected());
     updateMQTT(now);
     kernel.update(now);

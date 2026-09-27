@@ -1,4 +1,14 @@
+/**
+ * @file UltrasonicSensor.cpp
+ * @brief Implementación de la adquisición de distancia con HC-SR04 y filtro anti-rebote.
+ */
+
 #include "UltrasonicSensor.h"
+
+// Constante física: velocidad del sonido ~343 m/s a 20°C (29.1 us/cm de ida, 58.2 us ida y vuelta)
+static constexpr uint32_t US_ROUNDTRIP_CM = 58UL;
+static constexpr uint16_t DISTANCE_OUT_OF_RANGE = 999;
+static constexpr uint16_t MIN_VALID_DISTANCE_CM = 3;
 
 UltrasonicSensor::UltrasonicSensor()
     : trigPin(255),
@@ -7,7 +17,7 @@ UltrasonicSensor::UltrasonicSensor()
       sampleIntervalMs(US_SAMPLE_INTERVAL_MS),
       timeoutUs(US_TIMEOUT_US),
       lastSampleTime(0),
-      lastDistanceCm(999),
+      lastDistanceCm(DISTANCE_OUT_OF_RANGE),
       vehiclePresent(false),
       debounceCounter(0),
       arrivedEvent(false),
@@ -31,7 +41,7 @@ void UltrasonicSensor::begin(uint8_t triggerPin, uint8_t echoPinNum,
     digitalWrite(trigPin, LOW);
 
     lastSampleTime = 0;
-    lastDistanceCm = 999;
+    lastDistanceCm = DISTANCE_OUT_OF_RANGE;
     vehiclePresent = false;
     debounceCounter = 0;
     arrivedEvent = false;
@@ -40,9 +50,12 @@ void UltrasonicSensor::begin(uint8_t triggerPin, uint8_t echoPinNum,
 
 uint16_t UltrasonicSensor::readDistanceOnce()
 {
-    if (trigPin == 255 || echoPin == 255) return 999;
+    if (trigPin == 255 || echoPin == 255)
+    {
+        return DISTANCE_OUT_OF_RANGE;
+    }
 
-    // Pulso de disparo de 10 microsegundos
+    // Pulso de disparo acústico de 10 microsegundos
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
     digitalWrite(trigPin, HIGH);
@@ -50,22 +63,23 @@ uint16_t UltrasonicSensor::readDistanceOnce()
     digitalWrite(trigPin, LOW);
 
     // Medición con timeout acotado (máximo ~5.8 ms para 1 metro)
-    // Evita totalmente el bloqueo por defecto de 1 segundo de pulseIn
+    // Previene cualquier bloqueo de CPU en caso de ausencia de eco
     unsigned long duration = pulseIn(echoPin, HIGH, timeoutUs);
 
     if (duration == 0)
     {
-        // Sin eco recibido dentro del rango acotado
-        return 999;
+        return DISTANCE_OUT_OF_RANGE;
     }
 
-    // Cálculo de distancia en cm (velocidad sonido ~343 m/s = 29.1 us/cm ida o 58.2 us ida y vuelta)
-    return (uint16_t)(duration / 58UL);
+    return (uint16_t)(duration / US_ROUNDTRIP_CM);
 }
 
 void UltrasonicSensor::update(uint32_t now)
 {
-    if (trigPin == 255 || echoPin == 255) return;
+    if (trigPin == 255 || echoPin == 255)
+    {
+        return;
+    }
 
     if (now - lastSampleTime < sampleIntervalMs)
     {
@@ -75,14 +89,16 @@ void UltrasonicSensor::update(uint32_t now)
 
     uint16_t measuredDistance = readDistanceOnce();
 
-    // Descartar lecturas corruptas por debajo de la zona ciega del transductor (< 3 cm)
-    bool rawDetect = (measuredDistance >= 3 && measuredDistance <= thresholdCm);
+    // Descartar ecos inverosímiles por debajo de la zona ciega (< 3 cm)
+    bool rawDetect = (measuredDistance >= MIN_VALID_DISTANCE_CM && measuredDistance <= thresholdCm);
 
+    // Preservar la distancia válida detectada durante la presencia del vehículo
     if (rawDetect || !vehiclePresent)
     {
         lastDistanceCm = measuredDistance;
     }
 
+    // Filtro anti-rebote mediante confirmaciones de muestras consecutivas
     if (rawDetect != vehiclePresent)
     {
         debounceCounter++;

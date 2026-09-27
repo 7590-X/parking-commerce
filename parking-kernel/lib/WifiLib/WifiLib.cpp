@@ -1,13 +1,16 @@
-#include <WifiLib.h>
+/**
+ * @file WifiLib.cpp
+ * @brief Implementación de la gestión WiFi con ESP-01.
+ */
+
+#include "WifiLib.h"
 
 namespace
 {
-    // SoftwareSerial persistente para evitar la destrucción del objeto en la pila
     SoftwareSerial espSerial(PIN_ESP_RX, PIN_ESP_TX);
     const char *storedSsid = nullptr;
     const char *storedPassword = nullptr;
     uint32_t lastWiFiCheck = 0;
-    const uint32_t WIFI_CHECK_INTERVAL_MS = 10000UL;
     bool wifiConnected = false;
 }
 
@@ -17,7 +20,6 @@ void setupWiFi(const char *ssid, const char *password)
     storedPassword = password;
 
     espSerial.begin(9600);
-    // WiFi.init ya gestiona internamente la inicialización y reseteo del ESP de forma segura
     WiFi.init(&espSerial);
 
     if (WiFi.status() == WL_NO_SHIELD)
@@ -30,10 +32,9 @@ void setupWiFi(const char *ssid, const char *password)
     Serial.print(F("[WiFi] Conectando a: "));
     Serial.println(ssid);
 
-    // Intento inicial
     WiFi.begin(ssid, password);
 
-    // Espera acotada (máx 10 segundos) durante setup
+    // Espera acotada (máximo 10 segundos) durante el arranque inicial
     uint32_t startWait = millis();
     while (WiFi.status() != WL_CONNECTED && (millis() - startWait < 10000UL))
     {
@@ -51,7 +52,7 @@ void setupWiFi(const char *ssid, const char *password)
     }
     else
     {
-        Serial.println(F("\n[WiFi] No se pudo conectar de inmediato. Se reintentará en segundo plano."));
+        Serial.println(F("\n[WiFi] Enlace no inmediato. Se reintentará en segundo plano."));
     }
 }
 
@@ -62,8 +63,8 @@ bool isWiFiConnected()
 
 void updateWiFi(uint32_t now, bool isNetworkActive)
 {
-    // Si la sesión MQTT está activa, el enlace WiFi físico está 100% operativo.
-    // Omitimos AT+CIPSTATUS para no ejecutar espEmptyBuf() ni destruir paquetes MQTT entrantes.
+    // Si la sesión MQTT está activa, el enlace WiFi está garantizado.
+    // Omitimos AT+CIPSTATUS para no disparar espEmptyBuf() ni destruir paquetes MQTT entrantes.
     if (isNetworkActive)
     {
         wifiConnected = true;
@@ -71,7 +72,7 @@ void updateWiFi(uint32_t now, bool isNetworkActive)
         return;
     }
 
-    // Verificación periódica no saturante (cada 10 segundos) solo si no hay conexión MQTT activa
+    // Sondeo de estado solo cuando no hay socket activo de capas superiores
     if (now - lastWiFiCheck < WIFI_CHECK_INTERVAL_MS)
     {
         return;

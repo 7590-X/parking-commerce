@@ -1,3 +1,8 @@
+/**
+ * @file HardwareServo.cpp
+ * @brief Implementación del driver de servomotor por Hardware PWM en ATmega328P.
+ */
+
 #include "HardwareServo.h"
 
 HardwareServo::HardwareServo()
@@ -17,21 +22,21 @@ void HardwareServo::begin(uint8_t pin, uint16_t minPulseUs, uint16_t maxPulseUs)
     currentAngle = 0;
     isAttached = false;
 
-    // Configurar Pin 9 (PB1 / OC1A) como salida
+    // Configurar pin como salida en nivel bajo
     pinMode(servoPin, OUTPUT);
     digitalWrite(servoPin, LOW);
 
-    // Configuración del Timer 1 para Fast PWM de 16 bits (Modo 14: TOP = ICR1)
-    // Prescaler = 8 -> 16 MHz / 8 = 2 MHz (cada tick equivale a 0.5 µs)
+    // Timer 1: Modo 14 (Fast PWM con TOP = ICR1)
+    // Prescaler = 8 -> 16 MHz / 8 = 2 MHz (1 tick = 0.5 µs)
     // Período = 40000 ticks * 0.5 µs = 20,000 µs = 20 ms (50 Hz exactos)
     TCCR1A = _BV(WGM11);
     TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS11);
     ICR1 = 40000;
 
-    // Inhabilitar interrupciones de Timer 1 (modo 100% hardware puro sin interrupción)
+    // Inhabilitar interrupciones de Timer 1 (inmunidad absoluta contra jitter de software)
     TIMSK1 = 0;
 
-    // Valor inicial de comparación (ancho de pulso mínimo por defecto)
+    // Ancho de pulso base inicial
     OCR1A = minUs << 1;
 }
 
@@ -40,17 +45,17 @@ void HardwareServo::attach(uint8_t pin)
     servoPin = pin;
     pinMode(servoPin, OUTPUT);
 
-    // Conectar el pin 9 (OC1A) directamente a la salida del comparador de hardware
+    // Conectar el pin físico a la salida del comparador OC1A
     TCCR1A |= _BV(COM1A1);
     isAttached = true;
 }
 
 void HardwareServo::detach()
 {
-    // Desconectar el pin 9 del Timer 1
+    // Desconectar el comparador de hardware de la salida física
     TCCR1A &= ~_BV(COM1A1);
 
-    // Forzar nivel bajo en el pin para reposo absoluto
+    // Asegurar nivel bajo constante en reposo
     digitalWrite(servoPin, LOW);
     isAttached = false;
 }
@@ -60,13 +65,15 @@ bool HardwareServo::attached() const
     return isAttached;
 }
 
-void HardwareServo::write(int angle)
+void HardwareServo::write(uint8_t angle)
 {
-    if (angle < 0) angle = 0;
-    if (angle > 180) angle = 180;
+    if (angle > 180)
+    {
+        angle = 180;
+    }
     currentAngle = angle;
 
-    // Conversión lineal precisa de ángulo [0 - 180] a microsegundos [minUs - maxUs]
+    // Mapeo lineal: ángulo [0 - 180] -> microsegundos [minUs - maxUs]
     uint32_t us = (uint32_t)minUs + (((uint32_t)(maxUs - minUs) * (uint32_t)angle) / 180UL);
     writeMicroseconds((uint16_t)us);
 }
@@ -76,12 +83,11 @@ void HardwareServo::writeMicroseconds(uint16_t us)
     if (us < minUs) us = minUs;
     if (us > maxUs) us = maxUs;
 
-    // Con prescaler 8 y reloj a 16 MHz, cada tick es 0.5 µs:
-    // ticks = us / 0.5 = us * 2 (us << 1)
+    // Conversión a ticks de Timer 1 (2 ticks por microsegundo con reloj a 2 MHz)
     OCR1A = us << 1;
 }
 
-int HardwareServo::read() const
+uint8_t HardwareServo::read() const
 {
     return currentAngle;
 }

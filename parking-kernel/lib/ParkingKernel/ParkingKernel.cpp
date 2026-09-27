@@ -1,8 +1,13 @@
+/**
+ * @file ParkingKernel.cpp
+ * @brief Implementación de la Máquina de Estados Finitos (FSM) de Parking Kernel.
+ */
+
 #include "ParkingKernel.h"
 
 ParkingKernel::ParkingKernel()
     : currentState(STATE_IDLE),
-      autoOpen(false), // Requiere validación por MQTT del broker por defecto
+      autoOpen(false),
       stateTimer(0),
       lastTelemetryTime(0)
 {
@@ -56,8 +61,8 @@ void ParkingKernel::transitionTo(KernelState newState)
 
     case STATE_ACCESS_DENIED:
         entranceBarrier.close();
-        entranceLight.showMoving(); // Alerta visual de rechazo
-        Serial.println(F("[KERNEL] Estado: ACCESO DENEGADO (Sin espacio disponible en parqueo)"));
+        entranceLight.showMoving(); // Alerta visual rápida de rechazo
+        Serial.println(F("[KERNEL] Estado: ACCESO DENEGADO (Sin espacio disponible)"));
         sendMQTTMessage(TOPIC_SENSOR_EVENT, "ACCESS_DENIED_NO_SPACE");
         break;
 
@@ -92,7 +97,7 @@ void ParkingKernel::handleAuthResponse(const char *response)
     Serial.print(F("[KERNEL] Respuesta de Broker recibida: "));
     Serial.println(response);
 
-    // Procesar solo si estamos esperando autorización o si fuimos denegados previamente
+    // Procesar solo si estamos esperando autorización o en estado previo de rechazo
     if (currentState == STATE_VEHICLE_WAIT_AUTH || currentState == STATE_ACCESS_DENIED)
     {
         if (strcmp(response, PAYLOAD_ALLOW) == 0 || strcmp(response, "OPEN") == 0 || strcmp(response, "VLD") == 0)
@@ -112,12 +117,12 @@ void ParkingKernel::handleCommand(const char *cmd)
 {
     if (strcmp(cmd, "OPEN") == 0)
     {
-        Serial.println(F("[KERNEL] Comando manual recibido: OPEN"));
+        Serial.println(F("[KERNEL] Comando manual: OPEN"));
         transitionTo(STATE_OPENING);
     }
     else if (strcmp(cmd, "CLOSE") == 0)
     {
-        Serial.println(F("[KERNEL] Comando manual recibido: CLOSE"));
+        Serial.println(F("[KERNEL] Comando manual: CLOSE"));
         transitionTo(STATE_CLOSING);
     }
     else if (strcmp(cmd, "AUTO_ON") == 0)
@@ -132,12 +137,12 @@ void ParkingKernel::handleCommand(const char *cmd)
 
 void ParkingKernel::update(uint32_t now)
 {
-    // Actualización no bloqueante de periféricos
+    // 1. Actualización no bloqueante de periféricos
     entranceSensor.update(now);
     entranceBarrier.update(now);
     entranceLight.update(now);
 
-    // 2. Máquina de estados finitos (FSM)
+    // 2. Máquina de Estados Finitos (FSM)
     switch (currentState)
     {
     case STATE_IDLE:
@@ -159,14 +164,14 @@ void ParkingKernel::update(uint32_t now)
         break;
 
     case STATE_VEHICLE_WAIT_AUTH:
-        // Si el vehículo se retira antes de recibir respuesta
+        // Si el vehículo se retira antes de recibir autorización del broker
         if (entranceSensor.hasVehicleCleared())
         {
-            Serial.println(F("[KERNEL] Vehiculo se retiro mientras esperaba respuesta. Cancelando."));
+            Serial.println(F("[KERNEL] Vehiculo se retiro antes de autorizacion. Cancelando."));
             sendMQTTMessage(TOPIC_SENSOR_EVENT, "REQUEST_CANCELLED");
             transitionTo(STATE_IDLE);
         }
-        // Timeout de espera si el broker no responde
+        // Timeout de espera si el broker no responde en el tiempo límite
         else if (now - stateTimer >= AUTH_TIMEOUT_MS)
         {
             Serial.println(F("[KERNEL] TIMEOUT esperando respuesta del Broker. Cancelando solicitud."));
@@ -176,21 +181,22 @@ void ParkingKernel::update(uint32_t now)
         break;
 
     case STATE_ACCESS_DENIED:
-        // Después de la alerta visual de rechazo, mantener luz roja continua
+        // Tras la alerta visual de rechazo, mantener luz roja continua fija
         if (now - stateTimer >= REJECTION_ALERT_MS)
         {
             entranceLight.showOccupied();
         }
 
-        // Si el vehículo se retira tras ser denegado
+        // Si el vehículo denegado se retira, volver a IDLE
         if (entranceSensor.hasVehicleCleared())
         {
-            Serial.println(F("[KERNEL] Vehiculo denegado se ha retirado. Volviendo a IDLE."));
+            Serial.println(F("[KERNEL] Vehiculo denegado se retiro. Retornando a IDLE."));
             transitionTo(STATE_IDLE);
         }
         break;
 
     case STATE_OPENING:
+        // Avanzar a pase libre únicamente cuando la talanquera completó su recorrido y asentamiento
         if (entranceBarrier.isFullyOpen())
         {
             transitionTo(STATE_OPEN_WAIT_PASS);
@@ -198,7 +204,7 @@ void ParkingKernel::update(uint32_t now)
         break;
 
     case STATE_OPEN_WAIT_PASS:
-        // Esperar a que el vehículo cruce completamente el sensor
+        // Esperar a que el vehículo cruce completamente el sensor ultrasónico
         if (entranceSensor.hasVehicleCleared())
         {
             sendMQTTMessage(TOPIC_SENSOR_EVENT, "VEHICLE_CLEARED");
@@ -207,7 +213,7 @@ void ParkingKernel::update(uint32_t now)
         break;
 
     case STATE_CLEARING_DELAY:
-        // Seguridad: si otro vehículo se acerca inmediatamente, volvemos a esperar cruce
+        // Seguridad: si otro vehículo se aproxima de inmediato, reiniciar espera de cruce
         if (entranceSensor.isVehiclePresent())
         {
             transitionTo(STATE_OPEN_WAIT_PASS);
@@ -219,7 +225,7 @@ void ParkingKernel::update(uint32_t now)
         break;
 
     case STATE_CLOSING:
-        // Seguridad anti-aplastamiento: si un vehículo aparece mientras cierra, reabrir de inmediato
+        // Seguridad anti-aplastamiento: si un obstáculo o vehículo aparece al bajar, reabrir de inmediato
         if (entranceSensor.isVehiclePresent())
         {
             Serial.println(F("[KERNEL] SEGURIDAD: Obstaculo detectado al cerrar -> Reabriendo!"));
@@ -247,9 +253,9 @@ void ParkingKernel::sendTelemetry(uint32_t now)
         if (isMQTTConnected())
         {
             char buffer[32];
-            snprintf(buffer, sizeof(buffer), "dist=%u,state=%u,ang=%d",
+            snprintf(buffer, sizeof(buffer), "dist=%u,state=%u,ang=%u",
                      entranceSensor.getDistanceCm(),
-                     (uint8_t)currentState,
+                     static_cast<uint8_t>(currentState),
                      entranceBarrier.getCurrentAngle());
             sendMQTTMessage(TOPIC_TELEMETRY, buffer);
         }

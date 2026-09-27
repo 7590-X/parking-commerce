@@ -1,5 +1,10 @@
-#include <BrokerLib.h>
-#include <WifiLib.h>
+/**
+ * @file BrokerLib.cpp
+ * @brief Implementación del cliente MQTT no bloqueante con PubSubClient y WiFiEsp.
+ */
+
+#include "BrokerLib.h"
+#include "WifiLib.h"
 
 namespace
 {
@@ -20,7 +25,7 @@ void setupMQTTClient(const char *broker, MQTTMessageHandler handler, const char 
 
 void updateMQTT(uint32_t now)
 {
-    // Si no hay WiFi (consulta en memoria, sin saturar comandos AT serie), no intentar conectar MQTT
+    // Si no hay enlace WiFi en memoria, no intentar abrir sockets TCP
     if (!isWiFiConnected())
     {
         return;
@@ -32,7 +37,7 @@ void updateMQTT(uint32_t now)
         return;
     }
 
-    // Reintento no bloqueante
+    // Reintento no bloqueante espaciado por temporizador
     if (now - lastReconnectAttempt >= MQTT_RECONNECT_INTERVAL_MS)
     {
         lastReconnectAttempt = now;
@@ -51,7 +56,8 @@ void updateMQTT(uint32_t now)
         if (ok)
         {
             Serial.println(F("Conectado!"));
-            // Suscribirse espaciando llamadas para permitir que el ESP procese cada SUBACK ordenadamente
+
+            // Suscripción con pequeño espaciado para que el ESP procese cada SUBACK de forma ordenada
             client.subscribe(TOPIC_BARRIER_CMD);
             client.loop();
             delay(50);

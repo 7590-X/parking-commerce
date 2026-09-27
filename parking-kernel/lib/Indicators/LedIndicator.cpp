@@ -1,8 +1,14 @@
+/**
+ * @file LedIndicator.cpp
+ * @brief Implementación de las clases LedIndicator y TrafficLight.
+ */
+
 #include "LedIndicator.h"
 
-// -------------------------------------------------------------
+// ============================================================================
 // LedIndicator
-// -------------------------------------------------------------
+// ============================================================================
+
 LedIndicator::LedIndicator()
     : pin(255),
       mode(LED_MODE_OFF),
@@ -23,14 +29,20 @@ void LedIndicator::on()
 {
     mode = LED_MODE_ON;
     currentPinState = true;
-    if (pin != 255) digitalWrite(pin, HIGH);
+    if (pin != 255)
+    {
+        digitalWrite(pin, HIGH);
+    }
 }
 
 void LedIndicator::off()
 {
     mode = LED_MODE_OFF;
     currentPinState = false;
-    if (pin != 255) digitalWrite(pin, LOW);
+    if (pin != 255)
+    {
+        digitalWrite(pin, LOW);
+    }
 }
 
 void LedIndicator::blink(uint32_t blinkInterval)
@@ -46,12 +58,18 @@ void LedIndicator::pulse(uint32_t durationMs)
     intervalMs = durationMs;
     currentPinState = true;
     lastToggleTime = millis();
-    if (pin != 255) digitalWrite(pin, HIGH);
+    if (pin != 255)
+    {
+        digitalWrite(pin, HIGH);
+    }
 }
 
 void LedIndicator::update(uint32_t now)
 {
-    if (pin == 255) return;
+    if (pin == 255)
+    {
+        return;
+    }
 
     if (mode == LED_MODE_BLINK)
     {
@@ -81,9 +99,10 @@ LedMode LedIndicator::getMode() const
     return mode;
 }
 
-// -------------------------------------------------------------
+// ============================================================================
 // TrafficLight
-// -------------------------------------------------------------
+// ============================================================================
+
 TrafficLight::TrafficLight()
 {
 }

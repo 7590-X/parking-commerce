@@ -1,3 +1,8 @@
+/**
+ * @file BarrierServo.cpp
+ * @brief Implementación del controlador de movimiento y reposo de la talanquera.
+ */
+
 #include "BarrierServo.h"
 
 BarrierServo::BarrierServo()
@@ -12,7 +17,7 @@ BarrierServo::BarrierServo()
 {
 }
 
-void BarrierServo::begin(uint8_t servoPin, int initialAngle, uint32_t stepInterval)
+void BarrierServo::begin(uint8_t servoPin, uint8_t initialAngle, uint32_t stepInterval)
 {
     pin = servoPin;
     currentAngle = initialAngle;
@@ -22,15 +27,15 @@ void BarrierServo::begin(uint8_t servoPin, int initialAngle, uint32_t stepInterv
     settling = true;
     settleStartTime = millis();
 
-    // Posicionamiento inicial seguro mediante Hardware PWM
+    // Inicialización del periférico Hardware PWM y posicionamiento inicial seguro
     servo.begin(pin);
     servo.attach(pin);
     servo.write(currentAngle);
     updateState();
 
-    Serial.print(F("[TALANQUERA] Inicializada con Hardware PWM en pin "));
+    Serial.print(F("[BARRIER] Inicializada con Hardware PWM en pin "));
     Serial.print(pin);
-    Serial.print(F(" | Angulo inicial: "));
+    Serial.print(F(" | Angulo base: "));
     Serial.print(currentAngle);
     Serial.println(F("°"));
 }
@@ -40,31 +45,33 @@ void BarrierServo::attachIfNeeded()
     if (pin != 255 && !servo.attached())
     {
         servo.attach(pin);
-        Serial.print(F("[TALANQUERA] >>> SENAL ACTIVADA: PWM acoplado (attach) en Pin "));
+        Serial.print(F("[BARRIER] >>> PWM acoplado (attach) en Pin "));
         Serial.println(pin);
     }
 }
 
 void BarrierServo::open()
 {
-    Serial.println(F("[TALANQUERA] >>> INICIANDO APERTURA (Comando recibido)"));
+    Serial.println(F("[BARRIER] >>> Comando recibido: APERTURA"));
     setTargetAngle(BARRIER_ANGLE_OPEN);
 }
 
 void BarrierServo::close()
 {
-    Serial.println(F("[TALANQUERA] >>> INICIANDO CIERRE (Comando recibido)"));
+    Serial.println(F("[BARRIER] >>> Comando recibido: CIERRE"));
     setTargetAngle(BARRIER_ANGLE_CLOSED);
 }
 
-void BarrierServo::setTargetAngle(int angle)
+void BarrierServo::setTargetAngle(uint8_t angle)
 {
-    if (angle < 0) angle = 0;
-    if (angle > 180) angle = 180;
+    if (angle > 180)
+    {
+        angle = 180;
+    }
 
     if (targetAngle != angle)
     {
-        Serial.print(F("[TALANQUERA] Cambio de objetivo: "));
+        Serial.print(F("[BARRIER] Cambio de objetivo: "));
         Serial.print(currentAngle);
         Serial.print(F("° -> "));
         Serial.print(angle);
@@ -79,8 +86,12 @@ void BarrierServo::setTargetAngle(int angle)
 
 void BarrierServo::update(uint32_t now)
 {
-    if (pin == 255) return;
+    if (pin == 255)
+    {
+        return;
+    }
 
+    // 1. Desplazamiento angular paso a paso (grado a grado)
     if (currentAngle != targetAngle)
     {
         attachIfNeeded();
@@ -101,7 +112,7 @@ void BarrierServo::update(uint32_t now)
             servo.write(currentAngle);
             updateState();
 
-            // Si acabamos de llegar al ángulo objetivo, iniciar tiempo de asentamiento físico
+            // Al alcanzar el ángulo objetivo, iniciar la fase de asentamiento físico
             if (currentAngle == targetAngle)
             {
                 settling = true;
@@ -109,23 +120,20 @@ void BarrierServo::update(uint32_t now)
             }
         }
     }
-    else
+    // 2. Fase de reposo y desacoplamiento de señal
+    else if (settling)
     {
-        // currentAngle == targetAngle
-        if (settling)
+        if (now - settleStartTime >= BARRIER_SETTLE_MS)
         {
-            if (now - settleStartTime >= BARRIER_SETTLE_MS)
+            settling = false;
+            if (servo.attached())
             {
-                settling = false;
-                if (servo.attached())
-                {
-                    servo.detach(); // Corte total de señal PWM en reposo para eliminar jitter
-                    Serial.print(F("[TALANQUERA] <<< REPOSO ALCANZADO: "));
-                    Serial.print(currentAngle);
-                    Serial.println(F("°. PWM desacoplado (detach)."));
-                }
-                updateState();
+                servo.detach(); // Corte total de señal PWM para eliminar ruido en reposo
+                Serial.print(F("[BARRIER] <<< Reposo alcanzado en "));
+                Serial.print(currentAngle);
+                Serial.println(F("°. PWM desacoplado (detach)."));
             }
+            updateState();
         }
     }
 }
@@ -142,14 +150,7 @@ void BarrierServo::updateState()
     }
     else
     {
-        if (currentAngle >= BARRIER_ANGLE_OPEN)
-        {
-            state = BARRIER_STATE_OPEN;
-        }
-        else
-        {
-            state = BARRIER_STATE_CLOSED;
-        }
+        state = (currentAngle >= BARRIER_ANGLE_OPEN) ? BARRIER_STATE_OPEN : BARRIER_STATE_CLOSED;
     }
 }
 
@@ -173,7 +174,7 @@ bool BarrierServo::isFullyClosed() const
     return (state == BARRIER_STATE_CLOSED && !settling);
 }
 
-int BarrierServo::getCurrentAngle() const
+uint8_t BarrierServo::getCurrentAngle() const
 {
     return currentAngle;
 }
