@@ -50,6 +50,7 @@ void ParkingKernel::transitionTo(KernelState newState)
     case STATE_IDLE:
         entranceBarrier.close();
         entranceLight.showOccupied();
+        entranceSensor.resetEvents(); // Descartar cualquier evento espurio o encolado del ciclo anterior
         Serial.println(F("[KERNEL] Estado: IDLE (Talanquera cerrada, semaforo rojo)"));
         break;
 
@@ -146,7 +147,8 @@ void ParkingKernel::update(uint32_t now)
     switch (currentState)
     {
     case STATE_IDLE:
-        if (entranceSensor.hasVehicleArrived())
+        // Exigir tanto el evento de llegada como la confirmación física actual de presencia
+        if (entranceSensor.hasVehicleArrived() && entranceSensor.isVehiclePresent())
         {
             Serial.print(F("[KERNEL] Vehiculo detectado en entrada (Distancia: "));
             Serial.print(entranceSensor.getDistanceCm());

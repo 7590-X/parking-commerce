@@ -83,8 +83,8 @@
 // ============================================================================
 
 #define US_SAMPLE_INTERVAL_MS   60UL        ///< Período entre disparos acústicos (evita eco residual)
-#define US_MAX_DISTANCE_CM      15          ///< Rango máximo acústico considerado (15 cm)
-#define US_TIMEOUT_US           (US_MAX_DISTANCE_CM * 58UL) ///< Timeout acotado para pulseIn (~5.8 ms)
+#define US_MAX_DISTANCE_CM      60          ///< Rango acústico para timeout de pulso (~3.5 ms max en pulseIn)
+#define US_TIMEOUT_US           (US_MAX_DISTANCE_CM * 58UL) ///< Timeout acotado para pulseIn (~3.5 ms)
 #define US_DETECT_THRESHOLD_CM  10          ///< Distancia límite para considerar detección (<= 10 cm)
 #define US_DEBOUNCE_COUNT       3           ///< Muestras consecutivas requeridas para confirmar estado
 

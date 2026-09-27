@@ -138,7 +138,8 @@ bool UltrasonicSensor::hasVehicleArrived()
     if (arrivedEvent)
     {
         arrivedEvent = false;
-        return true;
+        // Solo considerar evento de llegada si el vehículo sigue efectivamente presente
+        return vehiclePresent;
     }
     return false;
 }
@@ -148,7 +149,15 @@ bool UltrasonicSensor::hasVehicleCleared()
     if (clearedEvent)
     {
         clearedEvent = false;
-        return true;
+        // Solo considerar evento de despeje si el vehículo realmente ya no está presente
+        return !vehiclePresent;
     }
     return false;
+}
+
+void UltrasonicSensor::resetEvents()
+{
+    arrivedEvent = false;
+    clearedEvent = false;
+    debounceCounter = 0;
 }

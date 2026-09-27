@@ -55,6 +55,11 @@ public:
      */
     bool hasVehicleCleared();
 
+    /**
+     * @brief Descarta eventos encolados y reinicia el contador de anti-rebote.
+     */
+    void resetEvents();
+
 private:
     uint8_t trigPin;
     uint8_t echoPin;
