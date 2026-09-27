@@ -132,7 +132,7 @@ void ParkingKernel::handleCommand(const char *cmd)
 
 void ParkingKernel::update(uint32_t now)
 {
-    // 1. Actualización no bloqueante de periféricos
+    // Actualización no bloqueante de periféricos
     entranceSensor.update(now);
     entranceBarrier.update(now);
     entranceLight.update(now);
@@ -143,6 +143,10 @@ void ParkingKernel::update(uint32_t now)
     case STATE_IDLE:
         if (entranceSensor.hasVehicleArrived())
         {
+            Serial.print(F("[KERNEL] Vehiculo detectado en entrada (Distancia: "));
+            Serial.print(entranceSensor.getDistanceCm());
+            Serial.println(F(" cm)"));
+
             if (autoOpen)
             {
                 transitionTo(STATE_OPENING);

@@ -11,4 +11,5 @@ void setupWiFi(const char* ssid, const char* password);
 bool isWiFiConnected();
 
 // Mantiene el estado de conexión WiFi de forma no bloqueante
-void updateWiFi(uint32_t now);
+// Si isNetworkActive es true, se omite el sondeo de comandos AT para no destruir buffers serie
+void updateWiFi(uint32_t now, bool isNetworkActive = false);

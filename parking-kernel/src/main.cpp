@@ -37,10 +37,10 @@ void setup()
     Serial.println(F("   PARKING KERNEL - ARDUINO UNO       "));
     Serial.println(F("======================================"));
 
-    // 1. Inicializar lógica y actuadores primero (seguridad de hardware)
+    // Inicializar lógica y actuadores primero (seguridad de hardware)
     kernel.begin();
 
-    // 2. Inicializar conectividad
+    // Inicializar conectividad
     setupWiFi(WIFI_SSID, WIFI_PASS);
     setupMQTTClient(MQTT_BROKER_IP, onMQTTMessage);
 }
@@ -50,7 +50,7 @@ void loop()
     uint32_t now = millis();
 
     // Tareas cooperativas no bloqueantes
-    updateWiFi(now);
+    updateWiFi(now, isMQTTConnected());
     updateMQTT(now);
     kernel.update(now);
 }

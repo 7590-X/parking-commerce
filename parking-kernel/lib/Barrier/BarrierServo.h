@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include <Servo.h>
+#include <HardwareServo.h>
 #include <Config.h>
 
 enum BarrierState : uint8_t
@@ -30,13 +30,16 @@ public:
     int getCurrentAngle() const;
 
 private:
-    Servo servo;
+    HardwareServo servo;
     uint8_t pin;
     int currentAngle;
     int targetAngle;
     uint32_t stepIntervalMs;
     uint32_t lastStepTime;
+    uint32_t settleStartTime;
+    bool settling;
     BarrierState state;
 
     void updateState();
+    void attachIfNeeded();
 };

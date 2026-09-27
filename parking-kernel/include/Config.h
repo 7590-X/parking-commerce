@@ -80,12 +80,13 @@
 // Timeout acotado para pulseIn: 100 cm * 58 us/cm = 5800 us (~5.8 ms max de espera)
 #define US_TIMEOUT_US           (US_MAX_DISTANCE_CM * 58UL)
 #define US_DETECT_THRESHOLD_CM  20      // Presencia detectada si distancia <= 20 cm
-#define US_DEBOUNCE_COUNT       2       // Lecturas consecutivas para confirmar estado
+#define US_DEBOUNCE_COUNT       3       // Lecturas consecutivas para confirmar estado (filtro anti-ruido)
 
 // Servomotor Talanquera
-#define BARRIER_ANGLE_CLOSED    0
-#define BARRIER_ANGLE_OPEN      90
+#define BARRIER_ANGLE_CLOSED    5       // Ángulo seguro de reposo cerrado (evita choque contra tope mecánico a 0°)
+#define BARRIER_ANGLE_OPEN      90      // Ángulo de apertura total
 #define BARRIER_STEP_INTERVAL_MS 15UL   // Milisegundos por grado (suavidad de giro)
+#define BARRIER_SETTLE_MS       350UL   // Tiempo de asentamiento mecánico antes de desacoplar PWM (elimina jitter)
 #define BARRIER_AUTO_CLOSE_MS   3000UL  // Tiempo abierto antes de cerrar tras despeje
 
 // Señalización LED

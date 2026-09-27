@@ -74,9 +74,14 @@ void UltrasonicSensor::update(uint32_t now)
     lastSampleTime = now;
 
     uint16_t measuredDistance = readDistanceOnce();
-    lastDistanceCm = measuredDistance;
 
-    bool rawDetect = (measuredDistance > 0 && measuredDistance <= thresholdCm);
+    // Descartar lecturas corruptas por debajo de la zona ciega del transductor (< 3 cm)
+    bool rawDetect = (measuredDistance >= 3 && measuredDistance <= thresholdCm);
+
+    if (rawDetect || !vehiclePresent)
+    {
+        lastDistanceCm = measuredDistance;
+    }
 
     if (rawDetect != vehiclePresent)
     {

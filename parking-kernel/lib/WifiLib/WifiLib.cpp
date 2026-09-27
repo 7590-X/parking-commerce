@@ -60,9 +60,18 @@ bool isWiFiConnected()
     return wifiConnected;
 }
 
-void updateWiFi(uint32_t now)
+void updateWiFi(uint32_t now, bool isNetworkActive)
 {
-    // Verificación periódica no saturante (cada 10 segundos)
+    // Si la sesión MQTT está activa, el enlace WiFi físico está 100% operativo.
+    // Omitimos AT+CIPSTATUS para no ejecutar espEmptyBuf() ni destruir paquetes MQTT entrantes.
+    if (isNetworkActive)
+    {
+        wifiConnected = true;
+        lastWiFiCheck = now;
+        return;
+    }
+
+    // Verificación periódica no saturante (cada 10 segundos) solo si no hay conexión MQTT activa
     if (now - lastWiFiCheck < WIFI_CHECK_INTERVAL_MS)
     {
         return;
@@ -76,5 +85,9 @@ void updateWiFi(uint32_t now)
         Serial.println(F("[WiFi] Reconectando en segundo plano..."));
         WiFi.begin(storedSsid, storedPassword);
         wifiConnected = (WiFi.status() == WL_CONNECTED);
+        if (wifiConnected)
+        {
+            Serial.println(F("[WiFi] Reconectado exitosamente!"));
+        }
     }
 }
