@@ -28,14 +28,14 @@ parking-kernel/
 │   ├── Ultrasonic/              # Sensor ultrasónico HC-SR04 con anti-rebote y tiempos acotados
 │   │   ├── UltrasonicSensor.cpp
 │   │   └── UltrasonicSensor.h
-│   ├── WiFiEsp/                 # Driver WiFiEsp local parcheado para compatibilidad AT 1.3.0
+│   ├── WiFiEsp/                 # Driver WiFiEsp local optimizado y parcheado para AT 1.3.0 y MQTT
 │   │   ├── src/
 │   │   │   ├── WiFiEsp.h / .cpp
-│   │   │   ├── WiFiEspClient.h / .cpp
+│   │   │   ├── WiFiEspClient.h / .cpp   <-- [PARCHEADO: status() O(1) sin sondeo AT, eliminación de delay(4000)]
 │   │   │   ├── WiFiEspServer.h / .cpp
 │   │   │   ├── WiFiEspUdp.h / .cpp
 │   │   │   └── utility/
-│   │   │       ├── EspDrv.h / .cpp      <-- [ARCHIVO PARCHEADO]
+│   │   │       ├── EspDrv.h / .cpp      <-- [PARCHEADO: parser +IPD universal, timeout 50ms, buffers reducidos]
 │   │   │       ├── RingBuffer.h / .cpp
 │   │   │       └── debug.h
 │   │   ├── library.properties
@@ -44,7 +44,7 @@ parking-kernel/
 │       ├── WifiLib.cpp
 │       └── WifiLib.h
 ├── src/
-│   └── main.cpp                 # Punto de entrada (setup) y scheduler cooperativo no bloqueante (loop)
+│   └── main.cpp                 # Punto de entrada (setup), sanitización MQTT y scheduler cooperativo (loop)
 ├── test/                        # Pruebas unitarias
 ├── platformio.ini               # Configuración de compilación de PlatformIO, flags y dependencias
 └── README.md                    # Documentación del proyecto
@@ -59,17 +59,22 @@ parking-kernel/
 | **`BrokerLib`** | Capa de abstracción MQTT sobre `PubSubClient`. Gestiona reconexiones automáticas, secuenciación de suscripciones y emisión de telemetría. |
 | **`WifiLib`** | Capa de enlace de red para el ESP-01 vía `SoftwareSerial`. Monitorea el estado mediante variables cacheadas sin saturar el canal serie. |
 | **`Barrier`** | Control de movimiento angular suave del servomotor grado a grado sin retardos bloqueantes (`delay`). |
-| **`Ultrasonic`** | Lectura precisa con pulso de 10µs y medición acotada (`US_TIMEOUT_US = ~5.8ms`), integrando filtro anti-rebote configurable. |
+| **`Ultrasonic`** | Lectura precisa con pulso de 10µs y medición acotada (`US_TIMEOUT_US = ~3.5ms`), integrando filtro anti-rebote configurable. |
 | **`Indicators`** | Semáforo bicolor con patrones luminosos: Libre (Verde), Ocupado (Rojo), En movimiento (Parpadeo rápido) y Espera (Parpadeo lento). |
-| **`WiFiEsp`** | Driver local para comunicación AT con el chip ESP8266. Incluye corrección crítica en el parser de tramas entrantes `+IPD`. |
+| **`WiFiEsp`** | Driver local para comunicación AT con el chip ESP8266. Incluye corrección del parser `+IPD`, desacople de sondeo AT destructivo y optimización de memoria. |
 
 ---
 
-## Documentación Técnica del Parche en `WiFiEsp`
+## Documentación Técnica de Parches y Optimizaciones en `WiFiEsp`
 
-### 1. Diagnóstico del Problema Original
-Al conectar el Arduino Uno al broker MQTT a través del ESP-01, se observaba una desconexión en bucle infinito en el monitor serie:
+El driver `WiFiEsp` oficial presentaba limitaciones arquitectónicas severas al operar como puente entre `PubSubClient` (sesión TCP persistente) y un ESP8266 por `SoftwareSerial` en un microcontrolador de recursos mínimos (ATmega328P). Se implementaron dos parches críticos y una serie de optimizaciones de memoria.
 
+---
+
+### Parche 1: Compatibilidad de Cabeceras `+IPD` en SDK 1.3.0 (Parser Universal)
+
+#### Diagnóstico Original
+Al inicializar la sesión MQTT, el sistema entraba en un bucle infinito de desconexiones:
 ```text
 [MQTT] Intentando conexion no bloqueante... [WiFiEsp] Connecting to 192.168.1.102
 Conectado!
@@ -80,57 +85,20 @@ Conectado!
 ```
 
 #### Causa Raíz
-1. **Incompatibilidad de firmware AT**: El ESP-01 reporta versión `SDK version: 1.3.0`. El comando `AT+CIPDINFO=1` (que instruye al ESP a adjuntar la IP y puerto remoto en las tramas `+IPD`) no existe en el SDK 1.3.0 (fue introducido por Espressif a partir del SDK 1.5.0). Al inicializar, el ESP responde `ERROR` a dicho comando, permaneciendo en modo estándar `AT+CIPDINFO=0`.
-2. **Formato de trama emitida por el ESP**:
-   - Formato estándar emitido: `+IPD,<conn_id>,<len>:<payload>`
-   - Formato extendido esperado por la librería: `+IPD,<conn_id>,<len>,"<remote_ip>",<port>:<payload>`
-3. **Corrupción del payload por `parseInt()`**:
-   En la versión oficial de `WiFiEsp 2.2.2`, la función `EspDrv::availData` leía `<len>` y asumía incondicionalmente que el siguiente bloque correspondía a la IP remota entre comillas.
-   Al llegar el delimitador `:` inmediatamente después de la longitud (ej. `+IPD,3,5:\x90\x03\x00\x01\x00`), el parser ejecutaba llamadas a `parseInt()` sobre los datos binarios del paquete MQTT (`SUBACK` de 5 bytes).
-   Como resultado:
-   - Los 5 bytes del paquete eran consumidos y descartados por `parseInt()` en su búsqueda fallida de dígitos numéricos.
-   - La función `availData` reportaba que había 5 bytes disponibles (`_bufPos = 5`), pero el buffer serie ya estaba vacío.
-   - Cuando `WiFiEspClient::read()` llamaba a `EspDrv::getData()`, la espera agotaba el tiempo límite de 2 segundos arrojando `[WiFiEsp] TIMEOUT: 5`.
-   - Al no confirmarse la suscripción, `PubSubClient` cerraba el socket (`Disconnecting 3`) y repetía el ciclo indefinidamente.
+* **Firmware AT legado:** El ESP-01 ejecuta `SDK version: 1.3.0`. El comando `AT+CIPDINFO=1` (que incluye la IP y puerto remoto en la cabecera `+IPD`) no existe en dicha versión (se añadió en SDK 1.5.0).
+* **Consumo erróneo del payload por `parseInt()`:** En la versión oficial de `WiFiEsp 2.2.2`, `EspDrv::availData` asumía incondicionalmente una coma y la IP remota entre comillas tras la longitud. Al recibir un delimitador dos puntos `:` estándar (ej. `+IPD,0,5:\x90\x03...`), `parseInt()` intentaba buscar números sobre el payload binario MQTT (`SUBACK`), devorando los datos y dejando el buffer vacío, provocando el `TIMEOUT: 5` al intentar leer.
 
----
-
-### 2. Modificación Implementada
-
-Se modificó la función `EspDrv::availData` en el archivo local:
-📁 `lib/WiFiEsp/src/utility/EspDrv.cpp` (Líneas 674 a 696)
-
-#### Código Original (`WiFiEsp 2.2.2` oficial):
-```cpp
-// Asume ciegamente que tras <len> viene una coma y la IP remota entre comillas:
-_connId = espSerial->parseInt();    // <ID>
-espSerial->read();                  // ,
-_bufPos = espSerial->parseInt();    // <len>
-espSerial->read();                  // "  <-- Si el firmware envió ':', consume los datos
-_remoteIp[0] = espSerial->parseInt();    // <remote IP> (devora el payload MQTT)
-espSerial->read();                  // .
-_remoteIp[1] = espSerial->parseInt();
-espSerial->read();                  // .
-_remoteIp[2] = espSerial->parseInt();
-espSerial->read();                  // .
-_remoteIp[3] = espSerial->parseInt();
-espSerial->read();                  // "
-espSerial->read();                  // ,
-_remotePort = espSerial->parseInt();     // <remote port>
-espSerial->read();                  // :
-```
-
-#### Código Corregido (Parche de compatibilidad universal):
+#### Solución (`lib/WiFiEsp/src/utility/EspDrv.cpp`)
+Se adaptó el parser para evaluar dinámicamente el delimitador:
 ```cpp
 _connId = espSerial->parseInt();    // <ID>
 espSerial->read();                  // ,
 _bufPos = espSerial->parseInt();    // <len>
 
-// Evalúa si el delimitador posterior es ':' (estándar) o ',' (con CIPDINFO)
-char c = espSerial->read();
+char c = espSerial->read();         // Evalúa delimitador
 if (c == ',')
 {
-    // Solo si hay coma, se procesa la información de IP y puerto remoto
+    // Solo si hay coma se extrae la información extendida de IP y puerto
     _remoteIp[0] = espSerial->parseInt();
     espSerial->read();                  // .
     _remoteIp[1] = espSerial->parseInt();
@@ -140,31 +108,83 @@ if (c == ',')
     _remoteIp[3] = espSerial->parseInt();
     espSerial->read();                  // "
     espSerial->read();                  // ,
-    _remotePort = espSerial->parseInt();
+    _remotePort = espSerial->parseInt();     // <remote port>
     espSerial->read();                  // :
 }
-// Si c == ':', la cabecera termina aquí. El primer byte del payload queda intacto en el buffer serie.
+// Si c == ':', la cabecera concluye y el payload MQTT queda intacto en el buffer serie.
 ```
-
-#### Beneficio
-- **Compatibilidad total**: Funciona transparentemente tanto con firmwares ESP8266 antiguos (SDK 1.3.0, 1.4.0) como con versiones modernas (SDK 1.5.0+, AT 1.7.x, AT 2.x).
-- **Integridad de datos**: Los paquetes binarios de MQTT (`CONNACK`, `SUBACK`, `PUBLISH`) se conservan sin corrupción ni bytes devorados.
 
 ---
 
-### 3. Optimizaciones Complementarias en el Kernel
+### Parche 2: Desacoplamiento del Sondeo AT Destructivo en `WiFiEspClient::status()`
 
-Junto con el parche de la librería, se efectuaron tres mejoras esenciales para garantizar estabilidad a largo plazo:
+#### Diagnóstico del Problema
+A pesar de estar conectado al broker:
+1. **Llegada tardía de mensajes:** Los mensajes del broker (`ALLOW`/`DENY`) se perdían reiteradamente y solo ingresaban tras el 3.er intento.
+2. **Desconexiones intermitentes del ESP:** El módulo ESP-01 se desconectaba o reiniciaba aleatoriamente durante la operación normal.
 
-1. **Caché de Estado WiFi en Memoria (`lib/WifiLib/WifiLib.cpp`)**:
-   - *Problema previo*: `BrokerLib.cpp` llamaba a `WiFi.status()` en cada ciclo de `loop()`. Dicha función enviaba `AT+CIPSTATUS` al ESP y llamaba a `espEmptyBuf()`, vaciando el buffer serie hasta 100 veces por segundo y destruyendo cualquier paquete entrante.
-   - *Solución*: Se introdujo la variable booleana `wifiConnected`. `isWiFiConnected()` responde en $O(1)$ sin tráfico serie, y la consulta física al ESP mediante `WiFi.status()` solo ocurre cada 10 segundos en `updateWiFi()`.
+#### Causa Raíz
+1. **Vaciado destructivo del buffer serie (`espEmptyBuf`):**  
+   En cada iteración del `loop()`, `PubSubClient::loop()` invocaba `connected()`, la cual llamaba a `WiFiEspClient::status()`. En el driver original:
+   ```cpp
+   // CÓDIGO ORIGINAL DEFECTUOSO:
+   uint8_t WiFiEspClient::status() {
+       if (_sock == 255) return CLOSED;
+       if (EspDrv::availData(_sock)) return ESTABLISHED;
+       if (EspDrv::getClientState(_sock)) return ESTABLISHED; // <-- Causa raíz
+       ...
+   }
+   ```
+   Cuando no había datos pendientes en ese microsegundo exacto, llamaba a `getClientState()`, la cual transmitía `AT+CIPSTATUS` por `SoftwareSerial` y ejecutaba internamente **`espEmptyBuf()`**. Dicha función **borraba y purgaba el buffer de recepción del Arduino**. Si la respuesta del broker (`+IPD`) acababa de llegar, era **eliminada antes de que el callback pudiera procesarla**.
+2. **Colisiones y cierre espurio del socket:**  
+   Si la trama `+IPD` llegaba mientras `EspDrv` esperaba la respuesta de `AT+CIPSTATUS`, el parser se desincronizaba, `getClientState()` retornaba `false`, y `status()` cerraba y liberaba el socket erróneamente (`_sock = 255`), forzando una desconexión total.
+3. **Saturación del procesador del ESP8266:**  
+   Enviar decenas de comandos `AT+CIPSTATUS` por segundo a 9600 baudios inundaba la cola UART del ESP-01, provocando reinicios por **Watchdog Timer (WDT)**.
 
-2. **Espaciado en Suscripciones MQTT (`lib/BrokerLib/BrokerLib.cpp`)**:
-   - Al conectarse al broker, se incluyeron llamadas a `client.loop()` y una pausa controlada de 50ms entre `client.subscribe(TOPIC_BARRIER_CMD)` y `client.subscribe(TOPIC_ENTRY_RESPONSE)`. Esto asegura que el `SUBACK` del primer tópico sea recibido y procesado por el ESP antes de enviar el segundo comando `AT+CIPSEND`.
+#### Solución (`lib/WiFiEsp/src/WiFiEspClient.cpp`)
+Se desacopló `status()` del canal serie, consultando directamente el descriptor de socket en memoria en tiempo constante $O(1)$:
+```cpp
+uint8_t WiFiEspClient::status()
+{
+    if (_sock == 255 || WiFiEspClass::_state[_sock] == NA_STATE)
+    {
+        _sock = 255;
+        return CLOSED;
+    }
 
-3. **Ampliación del Buffer RX de `SoftwareSerial` (`platformio.ini`)**:
-   - Se configuró la bandera `-D_SS_MAX_RX_BUFF=128`. El buffer de recepción por software se amplió de 64 a 128 bytes, previniendo desbordamientos mientras el microcontrolador atiende las interrupciones del servomotor o la lectura del sensor HC-SR04.
+    return ESTABLISHED;
+}
+```
+* **Detección natural de desconexión:** Si el broker cierra la conexión, `write()` falla en la siguiente emisión o keepalive ping, invocando `stop()`, lo que actualiza `_sock = 255` sin necesidad de sondeos AT destructivos.
+* **Eliminación de bloqueo de 4 segundos:** En `WiFiEspClient::write()`, se eliminó la llamada `delay(4000);` que congelaba el microcontrolador ante cualquier fallo transitorio de escritura.
+
+---
+
+### Parche 3: Acotamiento de Timeout de Lectura en `EspDrv`
+
+#### Causa
+Arduino `Stream` utiliza un tiempo de espera predeterminado de **1,000 ms** (`setTimeout(1000)`). Si `EspDrv::availData` encontraba bytes no reconocidos, el microcontrolador se bloqueaba durante 1 segundo completo.
+
+#### Solución (`lib/WiFiEsp/src/utility/EspDrv.cpp`)
+En `EspDrv::wifiDriverInit`, se fijó un timeout estricto de **50 ms**:
+```cpp
+EspDrv::espSerial = espSerial;
+espSerial->setTimeout(50); // Evita bloqueos de 1 segundo en métodos find() y parseInt()
+```
+
+---
+
+### Parche 4: Optimización de Huella de Memoria (SRAM & Pila)
+
+Para asegurar estabilidad en el microcontrolador ATmega328P (2 KB de RAM):
+
+1. **Reducción de matrices de escaneo (`lib/WiFiEsp/src/utility/EspDrv.h`):**
+   * Se redujo `WL_NETWORKS_LIST_MAXNUM` de 10 a 2 y `CMD_BUFFER_SIZE` de 200 a 80 bytes. Esto ahorra memoria de pila y libera espacio estático.
+2. **Dimensionamiento del Buffer de Paquetes MQTT (`platformio.ini`):**
+   * Se configuró `-DMQTT_MAX_PACKET_SIZE=128` (por defecto 256 bytes), ahorrando 128 bytes en el heap dinámico.
+   * Se fijó `-D_ESPLOGLEVEL_=1`, reduciendo el uso de Flash de **22,872 bytes a 21,776 bytes** (ahorro de más de 1 KB).
+3. **Sanitización de Payloads en `src/main.cpp`:**
+   * En `onMQTTMessage`, se implementó el recorte de caracteres de fin de línea (`\r`, `\n`) y espacios residuales para garantizar que las comparaciones de texto (`strcmp`) coincidan de manera instantánea y robusta.
 
 ---
 
