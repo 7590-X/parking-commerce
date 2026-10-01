@@ -8,7 +8,7 @@
 // Constante física: velocidad del sonido ~343 m/s a 20°C (29.1 us/cm de ida, 58.2 us ida y vuelta)
 static constexpr uint32_t US_ROUNDTRIP_CM = 58UL;
 static constexpr uint16_t DISTANCE_OUT_OF_RANGE = 999;
-static constexpr uint16_t MIN_VALID_DISTANCE_CM = 3;
+static constexpr uint16_t MIN_VALID_DISTANCE_CM = 2;
 
 UltrasonicSensor::UltrasonicSensor()
     : trigPin(255),

@@ -73,7 +73,7 @@ public:
 
 private:
     UltrasonicSensor entranceSensor;
-    BarrierServo entranceBarrier;
+    BarrierServo entranceBarrierIn;
     TrafficLight entranceLight;
 
     KernelState currentState;
