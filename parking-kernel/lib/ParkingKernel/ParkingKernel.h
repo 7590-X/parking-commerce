@@ -28,6 +28,17 @@ enum KernelState : uint8_t
     STATE_CLOSING               ///< Descendiendo talanquera (con protección anti-aplastamiento activa)
 };
 
+/**
+ * @brief Estados del flujo de salida vehicular independiente.
+ */
+enum ExitBarrierState : uint8_t
+{
+    EXIT_STATE_IDLE = 0,        ///< Talanquera de salida cerrada en reposo
+    EXIT_STATE_OPENING,         ///< Elevando talanquera de salida
+    EXIT_STATE_OPEN_WAIT,       ///< Talanquera elevada, tiempo de cortesía de paso activo
+    EXIT_STATE_CLOSING          ///< Descendiendo talanquera de salida
+};
+
 class ParkingKernel
 {
 public:
@@ -51,6 +62,12 @@ public:
     void handleAuthResponse(const char *response);
 
     /**
+     * @brief Procesa respuestas del broker sobre autorización de salida ("ALLOW").
+     * @param response Payload recibido desde el backend.
+     */
+    void handleExitResponse(const char *response);
+
+    /**
      * @brief Procesa comandos manuales o de emergencia ("OPEN", "CLOSE", "AUTO_ON", "AUTO_OFF").
      * @param cmd Comando recibido.
      */
@@ -71,14 +88,22 @@ public:
      */
     KernelState getState() const;
 
+    /**
+     * @brief Retorna el estado actual de la talanquera de salida.
+     */
+    ExitBarrierState getExitState() const { return exitState; }
+
 private:
     UltrasonicSensor entranceSensor;
     BarrierServo entranceBarrierIn;
+    BarrierServo exitBarrierOut;
     TrafficLight entranceLight;
 
     KernelState currentState;
+    ExitBarrierState exitState;
     bool autoOpen;
     uint32_t stateTimer;
+    uint32_t exitStateTimer;
     uint32_t lastTelemetryTime;
 
     void transitionTo(KernelState newState);

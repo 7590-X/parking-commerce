@@ -7,17 +7,20 @@
 #include "ParkingKernel.h"
 
 ParkingKernel::ParkingKernel()
-    : currentState(STATE_IDLE), autoOpen(false), stateTimer(0),
-      lastTelemetryTime(0) {}
+    : currentState(STATE_IDLE), exitState(EXIT_STATE_IDLE), autoOpen(false),
+      stateTimer(0), exitStateTimer(0), lastTelemetryTime(0) {}
 
 void ParkingKernel::begin() {
   entranceSensor.begin(PIN_US_TRIG, PIN_US_ECHO, US_DETECT_THRESHOLD_CM,
                        US_SAMPLE_INTERVAL_MS, US_TIMEOUT_US);
   entranceBarrierIn.begin(PIN_SERVO_BARRIER_IN, BARRIER_ANGLE_CLOSED,
                           BARRIER_STEP_INTERVAL_MS);
+  exitBarrierOut.begin(PIN_SERVO_BARRIER_OUT, BARRIER_ANGLE_CLOSED,
+                       BARRIER_STEP_INTERVAL_MS);
   entranceLight.begin(PIN_LED_GREEN, PIN_LED_RED);
 
   transitionTo(STATE_IDLE);
+  exitBarrierOut.close();
   Serial.println(F("[KERNEL] Sistema de Parqueo inicializado correctamente."));
 }
 
@@ -108,6 +111,19 @@ void ParkingKernel::handleAuthResponse(const char *response) {
   }
 }
 
+void ParkingKernel::handleExitResponse(const char *response) {
+  Serial.print(F("[KERNEL] Respuesta de Broker (Salida) recibida: "));
+  Serial.println(response);
+
+  if (strcmp(response, PAYLOAD_ALLOW) == 0 || strcmp(response, "OPEN") == 0 ||
+      strcmp(response, "VLD") == 0) {
+    Serial.println(F("[KERNEL] Salida AUTORIZADA -> Abriendo talanquera de salida"));
+    exitState = EXIT_STATE_OPENING;
+    exitStateTimer = millis();
+    exitBarrierOut.open();
+  }
+}
+
 void ParkingKernel::handleCommand(const char *cmd) {
   if (strcmp(cmd, "OPEN") == 0) {
     Serial.println(F("[KERNEL] Comando manual: OPEN"));
@@ -126,6 +142,7 @@ void ParkingKernel::update(uint32_t now) {
   // 1. Actualización no bloqueante de periféricos
   entranceSensor.update(now);
   entranceBarrierIn.update(now);
+  exitBarrierOut.update(now);
   entranceLight.update(now);
 
   // 2. Máquina de Estados Finitos (FSM)
@@ -219,7 +236,37 @@ void ParkingKernel::update(uint32_t now) {
     break;
   }
 
-  // 3. Telemetría periódica no saturante (cada N segundos)
+  // 3. Máquina de Estados Finitos (FSM) de Salida (independiente y sin señalización LED)
+  switch (exitState) {
+  case EXIT_STATE_IDLE:
+    break;
+
+  case EXIT_STATE_OPENING:
+    if (exitBarrierOut.isFullyOpen()) {
+      Serial.println(F("[KERNEL] Salida: Talanquera totalmente abierta. Iniciando tiempo de paso..."));
+      exitState = EXIT_STATE_OPEN_WAIT;
+      exitStateTimer = now;
+    }
+    break;
+
+  case EXIT_STATE_OPEN_WAIT:
+    if (now - exitStateTimer >= BARRIER_AUTO_CLOSE_MS) {
+      Serial.println(F("[KERNEL] Salida: Tiempo cumplido -> Cerrando talanquera de salida"));
+      exitState = EXIT_STATE_CLOSING;
+      exitStateTimer = now;
+      exitBarrierOut.close();
+    }
+    break;
+
+  case EXIT_STATE_CLOSING:
+    if (exitBarrierOut.isFullyClosed()) {
+      Serial.println(F("[KERNEL] Salida: Talanquera de salida cerrada. Retorno a reposo."));
+      exitState = EXIT_STATE_IDLE;
+    }
+    break;
+  }
+
+  // 4. Telemetría periódica no saturante (cada N segundos)
   sendTelemetry(now);
 }
 

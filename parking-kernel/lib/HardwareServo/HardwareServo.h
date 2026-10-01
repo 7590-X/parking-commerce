@@ -2,7 +2,7 @@
  * @file HardwareServo.h
  * @brief Driver de servomotor por Hardware PWM puro (Timer 1) para ATmega328P (Arduino Uno).
  *
- * Utiliza el Timer 1 en modo Fast PWM (50 Hz) conectado físicamente al Pin 9 (OC1A).
+ * Utiliza el Timer 1 en modo Fast PWM (50 Hz) conectado físicamente al Pin 9 (OC1A) o Pin 10 (OC1B).
  * Opera a nivel de silicio sin generar interrupciones de software (TIMSK1 = 0),
  * lo que proporciona inmunidad total frente a jitter provocado por librerías
  * que deshabilitan interrupciones como SoftwareSerial.
@@ -18,17 +18,17 @@ public:
 
     /**
      * @brief Inicializa el Timer 1 en modo Fast PWM (50 Hz).
-     * @param pin Pin de salida física (en ATmega328P debe ser el Pin 9 / OC1A).
+     * @param pin Pin de salida física (en ATmega328P debe ser el Pin 9 / OC1A o Pin 10 / OC1B).
      * @param minPulseUs Ancho de pulso mínimo para 0 grados (por defecto 544 us).
      * @param maxPulseUs Ancho de pulso máximo para 180 grados (por defecto 2400 us).
      */
     void begin(uint8_t pin = 9, uint16_t minPulseUs = 544, uint16_t maxPulseUs = 2400);
 
     /**
-     * @brief Conecta la salida del comparador de hardware al pin físico.
-     * @param pin Pin físico a conectar (por defecto Pin 9).
+     * @brief Conecta la salida del comparador de hardware al pin físico (Pin 9 u 10).
+     * @param pin Pin físico a conectar (255 para reusar el pin configurado en begin).
      */
-    void attach(uint8_t pin = 9);
+    void attach(uint8_t pin = 255);
 
     /**
      * @brief Desconecta el pin del temporizador y lo fija en LOW para reposo total.

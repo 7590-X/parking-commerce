@@ -63,11 +63,16 @@ void updateMQTT(uint32_t now)
             delay(50);
             client.subscribe(TOPIC_ENTRY_RESPONSE);
             client.loop();
+            delay(50);
+            client.subscribe(TOPIC_OUT_RESPONSE);
+            client.loop();
 
             Serial.print(F("[MQTT] Suscrito a: "));
             Serial.print(TOPIC_BARRIER_CMD);
+            Serial.print(F(", "));
+            Serial.print(TOPIC_ENTRY_RESPONSE);
             Serial.print(F(" y "));
-            Serial.println(TOPIC_ENTRY_RESPONSE);
+            Serial.println(TOPIC_OUT_RESPONSE);
         }
         else
         {

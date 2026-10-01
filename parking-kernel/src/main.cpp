@@ -41,6 +41,10 @@ static void onMQTTMessage(char *topic, byte *payload, unsigned int length)
     {
         kernel.handleAuthResponse(messageBuffer);
     }
+    else if (strcmp(topic, TOPIC_OUT_RESPONSE) == 0)
+    {
+        kernel.handleExitResponse(messageBuffer);
+    }
     else if (strcmp(topic, TOPIC_BARRIER_CMD) == 0)
     {
         kernel.handleCommand(messageBuffer);

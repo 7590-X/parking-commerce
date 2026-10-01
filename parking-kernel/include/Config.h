@@ -16,12 +16,12 @@
 // ============================================================================
 
 // Comunicación Serie con ESP-01 (SoftwareSerial)
-#define PIN_ESP_RX 10
-#define PIN_ESP_TX 11
+#define PIN_ESP_RX 4
+#define PIN_ESP_TX 5
 
-// Servomotor de la Talanquera (Hardware PWM Timer 1 - OC1A)
+// Servomotores de las Talanqueras (Hardware PWM Timer 1 - OC1A y OC1B)
 #define PIN_SERVO_BARRIER_IN 9
-#define PIN_SERVO_BARRIER_OUT 8
+#define PIN_SERVO_BARRIER_OUT 10
 
 // Sensor Ultrasónico de Presencia (HC-SR04)
 #define PIN_US_TRIG 6 ///< Trigger
@@ -62,6 +62,9 @@
 
 // Decisión de autorización emitida por el backend [Broker -> Arduino]
 #define TOPIC_ENTRY_RESPONSE "kernel/arduino/response/in"
+
+// Decisión de autorización de salida emitida por el backend [Broker -> Arduino]
+#define TOPIC_OUT_RESPONSE "kernel/arduino/response/out"
 
 // ============================================================================
 // PAYLOADS ESTANDARIZADOS
