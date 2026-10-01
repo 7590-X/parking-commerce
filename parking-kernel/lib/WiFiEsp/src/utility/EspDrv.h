@@ -36,8 +36,8 @@ along with The Arduino WiFiEsp library.  If not, see
 // Size of a MAC-address or BSSID
 #define WL_IPV4_LENGTH 4
 
-// Maximum size of a SSID list
-#define WL_NETWORKS_LIST_MAXNUM	10
+// Maximum size of a SSID list (2 is sufficient; saves ~300 bytes of scarce SRAM on ATmega328P)
+#define WL_NETWORKS_LIST_MAXNUM	2
 
 // Maxmium number of socket
 #define	MAX_SOCK_NUM		4
@@ -53,8 +53,8 @@ along with The Arduino WiFiEsp library.  If not, see
 #define NO_SOCKET_AVAIL 255
 
 
-// maximum size of AT command
-#define CMD_BUFFER_SIZE 200
+// maximum size of AT command (reduced from 200 to 80 to prevent stack exhaustion)
+#define CMD_BUFFER_SIZE 80
 
 
 typedef enum eProtMode {TCP_MODE, UDP_MODE, SSL_MODE} tProtMode;

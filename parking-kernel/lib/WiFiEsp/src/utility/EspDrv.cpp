@@ -49,7 +49,7 @@ Stream *EspDrv::espSerial;
 RingBuffer EspDrv::ringBuf(32);
 
 // Array of data to cache the information related to the networks discovered
-char 	EspDrv::_networkSsid[][WL_SSID_MAX_LENGTH] = {{"1"},{"2"},{"3"},{"4"},{"5"}};
+char 	EspDrv::_networkSsid[WL_NETWORKS_LIST_MAXNUM][WL_SSID_MAX_LENGTH] = {{0}};
 int32_t EspDrv::_networkRssi[WL_NETWORKS_LIST_MAXNUM] = { 0 };
 uint8_t EspDrv::_networkEncr[WL_NETWORKS_LIST_MAXNUM] = { 0 };
 
@@ -72,6 +72,7 @@ void EspDrv::wifiDriverInit(Stream *espSerial)
 	LOGDEBUG(F("> wifiDriverInit"));
 
 	EspDrv::espSerial = espSerial;
+	espSerial->setTimeout(50); // Acotar timeout de lectura para que find/parseInt no bloqueen 1000ms
 
 	bool initOK = false;
 	

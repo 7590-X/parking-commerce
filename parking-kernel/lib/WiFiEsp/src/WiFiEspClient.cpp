@@ -125,7 +125,6 @@ size_t WiFiEspClient::write(const uint8_t *buf, size_t size)
 	{
 		setWriteError();
 		LOGERROR1(F("Failed to write to socket"), _sock);
-		delay(4000);
 		stop();
 		return 0;
 	}
@@ -234,25 +233,13 @@ WiFiEspClient::operator bool()
 
 uint8_t WiFiEspClient::status()
 {
-	if (_sock == 255)
+	if (_sock == 255 || WiFiEspClass::_state[_sock] == NA_STATE)
 	{
+		_sock = 255;
 		return CLOSED;
 	}
 
-	if (EspDrv::availData(_sock))
-	{
-		return ESTABLISHED;
-	}
-
-	if (EspDrv::getClientState(_sock))
-	{
-		return ESTABLISHED;
-	}
-
-	WiFiEspClass::releaseSocket(_sock);
-	_sock = 255;
-
-	return CLOSED;
+	return ESTABLISHED;
 }
 
 IPAddress WiFiEspClient::remoteIP()

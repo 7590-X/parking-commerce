@@ -25,6 +25,13 @@ static void onMQTTMessage(char *topic, byte *payload, unsigned int length)
     memcpy(messageBuffer, payload, copyLen);
     messageBuffer[copyLen] = '\0';
 
+    // Eliminar saltos de linea o espacios accidentales que puedan romper strcmp
+    while (copyLen > 0 && (messageBuffer[copyLen - 1] == '\r' || messageBuffer[copyLen - 1] == '\n' || messageBuffer[copyLen - 1] == ' '))
+    {
+        copyLen--;
+        messageBuffer[copyLen] = '\0';
+    }
+
     Serial.print(F("[MQTT Rx] Topic: "));
     Serial.print(topic);
     Serial.print(F(" | Payload: "));
