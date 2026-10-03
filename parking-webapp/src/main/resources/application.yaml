@@ -15,11 +15,11 @@ spring:
     properties:
       hibernate:
         "[format_sql]": false
-
+  rabbitmq:
+    host: ${MQ_HOST:localhost}
+    port: ${MQ_PORT:5672}
+    username: ${MQ_USER:guest}
+    password: ${MQ_USER:guest}
+    virtual-host: ${MQ_VHOST:/}
 vaadin:
   launch-browser: true
-
-mqtt:
-  broker: tcp://localhost:1883
-  client-id: SpringBootBackend_Parking
-  qos: 1

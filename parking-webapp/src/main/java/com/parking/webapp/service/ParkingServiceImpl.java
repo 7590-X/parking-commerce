@@ -198,7 +198,6 @@ public class ParkingServiceImpl implements ParkingBrokerService, ParkingWebServi
         parkingRepository.decrementCapacity(DEFAULT_PARKING_ID, Instant.now());
 
         // Apertura física de la talanquera
-        hardwarePort.sendBarrierCommand("OPEN");
         hardwarePort.sendMQResponse(RK_RESPONSE_OUT, EntryResponseKernel.ALLOW.name());
         log.info("Salida autorizada para ticket {}. Talanquera aperturada.", uuid);
 
